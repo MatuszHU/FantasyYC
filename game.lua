@@ -10,7 +10,6 @@ Game.__index = Game
 function Game:new()
     local self = setmetatable({}, Game)
 
-    
     self:init()
 
     -- Create some example teams
@@ -42,6 +41,10 @@ end
 function Game:draw()
     self.gridManager:draw()
     self.characterManager:draw()
+
+    local currentPlayer = self.battleManager.players[self.battleManager.currentPlayerIndex]
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("Current Player: " .. currentPlayer.name, 10, 10)
 
     if self.battleManager.isBattleOver then
             local winner = self.battleManager.winner or "Unknown"
