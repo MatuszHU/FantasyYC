@@ -17,7 +17,7 @@ local game = {
     }
 }
 local settings = settingsView()
-local hero = character("En","goblin","cavalry", 3)
+local hero = character("En","goblin","cavalry", 3, 10,10)
 local NameManager = NameManager()
 
 
@@ -53,6 +53,7 @@ function loadMap(mapName)
     print("[DEBUG] Characters initialized successfully.")
     characters:addCharacter("En2","goblin","thief", 2, 5,5)
     changeGameState("running")
+    characters:addCharacter("En","goblin","cavalry", 3, 10,10)
     print("[DEBUG] Changed game state to running.")
     local test = love.graphics.newImage("assets/maps/ForestCamp.png")
     print(test:getWidth(), test:getHeight())
@@ -155,7 +156,7 @@ function love.draw()
         grid:draw()
         characters:highlightReachable()
         characters:draw()
-
+        love.graphics.setBackgroundColor(74,103,65,1)
         
     end
 
