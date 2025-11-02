@@ -17,7 +17,7 @@ return {
             evasion = 5,
             fow = 2,
             movement = 4
-        }
+        },
     },
     wizard = {
         name = "wizard",

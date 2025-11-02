@@ -17,8 +17,7 @@ local game = {
     }
 }
 local settings = settingsView()
-local hero = character("En","goblin","cavalry", 3, 10,10)
-local NameManager = NameManager()
+local names = NameManager()
 
 
 local buttons = {
@@ -28,11 +27,11 @@ local function changeGameState(state)
     game.state["menu"] = state == "menu"
     game.state["paused"] = state == "paused"
     game.state["running"] = state == "running"
-        print(string.format("[DEBUG] game.state changed to '%s' (menu=%s, paused=%s, running=%s)",
-        state,
-        tostring(game.state["menu"]),
-        tostring(game.state["paused"]),
-        tostring(game.state["running"])
+    print(string.format("[DEBUG] game.state changed to '%s' (menu=%s, paused=%s, running=%s)",
+    state,
+    tostring(game.state["menu"]),
+    tostring(game.state["paused"]),
+    tostring(game.state["running"])
     ))
 end
 local mouse = {
@@ -42,7 +41,7 @@ local mouse = {
 }
 
 grid = nil
-charaters = nil
+characters = nil
 
 function loadMap(mapName)
     print("[DEBUG] Loading map:", mapName)
@@ -51,7 +50,7 @@ function loadMap(mapName)
     print("[DEBUG] Map loaded successfully.")
     characters = CharacterManager:new(grid)
     print("[DEBUG] Characters initialized successfully.")
-    characters:addCharacter("En2","goblin","thief", 2, 5,5)
+    characters:addCharacter(names.getRandomName(),"elf","cavalry", 3, 5,5)
     changeGameState("running")
     characters:addCharacter("En","goblin","cavalry", 3, 10,10)
     print("[DEBUG] Changed game state to running.")
@@ -143,14 +142,7 @@ function love.draw()
         if settings.cornerInfoDisplayed then
             love.graphics.printf("FPS:"..love.timer.getFPS().." Platform: "..love.system.getOS().." Settings Display: "..tostring(settings.displayed).." Fullscreen Mode:"..tostring(love.window.getFullscreen()).." cornerInfoDisplayed: "..tostring(settings.cornerInfoDisplayed), font.debug.font,10,love.graphics.getHeight()-30,love.graphics.getWidth())
         end
-
-        -- TODO: Remove placeholder
-        if hero and hero2 then
-            local margin = 500
-            local x = love.graphics.getWidth() - margin
-            local y = 210
-            hero:draw(x, y)
-        end
+        
 
     elseif game.state["running"] then
         grid:draw()
@@ -167,5 +159,9 @@ end
 function love.keypressed(key)
     if key == "escape" then
         love.event.quit()
+    end
+    -- TODO: possible remove
+    if key == "l" then
+        characters:levelUpCharacters()
     end
 end
