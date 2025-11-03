@@ -1,6 +1,8 @@
+math.randomseed(os.time())
 local races = require "race"
 local classes = require "class"
 local SpriteManager = require "util/spriteManager"
+
 
 local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
 
@@ -17,7 +19,7 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
         return allocation
     end
 
-      return {
+    return {
         name = name or "Hero",
         race = races[raceKey],
         class = classes[classKey],
@@ -39,6 +41,28 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
             end
             self.stats.max_hp = self.stats.hp
             self.stats.attackRange = 1
+            self.bonusStats = {}
+        end,
+        levelUp = function(self)
+            self.level = self.level + 1
+            self.statPoints = self.statPoints + (math.floor((self.level - 1) / 4) + 3)
+            
+            local availableStats = {}
+            for statName in pairs(self.baseStats) do
+                table.insert(availableStats, statName)
+            end
+
+            local allocation = randomAllocate(self.statPoints, availableStats)
+            print(string.format("[LEVEL UP] %s reached level %d and gained %d stat points!",
+                self.name, self.level, self.statPoints))
+            
+            for stat, points in pairs(allocation) do
+                self.bonusStats[stat] = (self.bonusStats[stat] or 0) + points
+                print(string.format("  +%d %s", points, stat))
+            end
+
+            self.statPoints = 0
+            self:setStats()
         end,
         spriteManager = SpriteManager(),
         levelUp = function(self)
@@ -73,7 +97,6 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
             self.gridX = newGridX or self.gridX
             self.gridY = newGridY or self.gridY
         end,
-
     }
 end
 

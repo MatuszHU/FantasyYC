@@ -42,6 +42,10 @@ local mouse = {
 function loadMap(mapName)
     gameInstance = GameManager:new()
     changeGameState("running")
+    characters:addCharacter("En","goblin","cavalry", 3, 10,10)
+    print("[DEBUG] Changed game state to running.")
+    local test = love.graphics.newImage("assets/maps/ForestCamp.png")
+    print(test:getWidth(), test:getHeight())
 end
 
 function love.mousepressed(x,y,button,touch,presses)
@@ -72,8 +76,6 @@ end
 function love.load()
     love.window.setFullscreen(true)
     background = love.graphics.newImage("assets/backgrounds/medievalBG.jpg")
-    --settings = settingsView()
-
     love.window.setTitle("CS2 Nagy Projekt")
     buttons.menu.play = Button("Start", loadMap, "ForestCamp", 150, 40)
     buttons.menu.continue = Button("Continue", nil, nil, 150, 40)

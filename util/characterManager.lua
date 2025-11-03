@@ -78,6 +78,15 @@ end
 function CharacterManager:highlightReachable(char)
     self.reachableCells = self:getReachableCells(char)
 end
+-- TODO: possible remove
+function CharacterManager:levelUpCharacters()
+    for _, char in ipairs(self.characters) do
+        char:levelUp()
+        for k, v in pairs(char.stats) do
+            print(string.format("%s : %d",k,v))
+        end
+    end
+end
 
 function CharacterManager:clearHighlight()
     self.reachableCells = nil
