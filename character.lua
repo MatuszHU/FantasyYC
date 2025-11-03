@@ -29,6 +29,7 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
         bonusStats = {},
         stats = {},
         spriteIndex = 1,
+        isDefeated = false,
         offsetX = 0,
         gridX = gridX,
         gridY = gridY,
@@ -38,6 +39,8 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
                 self.bonusStats[k] = self.bonusStats[k] or 0
                 self.stats[k] = self.baseStats[k] + self.bonusStats[k]
             end
+            self.stats.max_hp = self.stats.hp
+            self.stats.attackRange = 1
             self.bonusStats = {}
         end,
         levelUp = function(self)
@@ -62,6 +65,24 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
             self:setStats()
         end,
         spriteManager = SpriteManager(),
+        levelUp = function(self)
+            self.level = self.level + 1
+            self.statPoints = self.statPoints + (math.floor((self.level - 1) / 4) + 3)
+            
+            local availableStats = {}
+            for statName in pairs(self.baseStats) do
+                table.insert(availableStats, statName)
+            end
+
+            local allocation = randomAllocate(self.statPoints, availableStats)
+            
+            for stat, points in pairs(allocation) do
+                self.bonusStats[stat] = (self.bonusStats[stat] or 0) + points
+            end
+
+            self.statPoints = 0
+            self:setStats()
+        end,
         loadSprite = function(self, offsetX)
             self.spriteIndex = spriteIndex or self.spriteIndex
             self.offsetX = offsetX or self.offsetX
