@@ -63,7 +63,7 @@ A felhasználó a játékba lépést követően ki tudja választani a nehézsé
 
 ### Fogalomtár
 
-    * Stratégiai játék: A stratégiai játék egy videojáték-műfaj, ami gondolkodást és megfontolt tervezést igényel a győzelem eléréséhez.
-    * Szerepjáték: A szerepjáték olyan tevékenységek megnevezése, amelyben a résztvevők egyénként vagy csoportban különböző szerepeket játszanak el, a tevékenység időtartama alatt a játékok lényegét jelentő szerepvállalásoknak megfelelően viselkednek.
-    * Nehézségi szint: A játék nehézségi szintje egy olyan, a játékos képességeitől és tapasztalatától függő paraméter, amely a játék kihívásának mértékét határozza meg, például a ellenségek erőssége, az erőforrások mennyisége vagy az összetett feladatok gyakorisága befolyásolásával.
-    * Loot: Gyűjtögetés, fosztogatás vagy fosztogatás révén szerzett zsákmány, hadizsákmány 
+* Stratégiai játék: A stratégiai játék egy videojáték-műfaj, ami gondolkodást és megfontolt tervezést igényel a győzelem eléréséhez.
+* Szerepjáték: A szerepjáték olyan tevékenységek megnevezése, amelyben a résztvevők egyénként vagy csoportban különböző szerepeket játszanak el, a tevékenység időtartama alatt a játékok lényegét jelentő szerepvállalásoknak megfelelően viselkednek.
+* Nehézségi szint: A játék nehézségi szintje egy olyan, a játékos képességeitől és tapasztalatától függő paraméter, amely a játék kihívásának mértékét határozza meg, például a ellenségek erőssége, az erőforrások mennyisége vagy az összetett feladatok gyakorisága befolyásolásáva
+
