@@ -3,6 +3,7 @@ local GridManager = require "util.gridManager"
 local CharacterManager = require "util.characterManager"
 local BattleManager = require "util.battleManager"
 local Phase = require "../enums.battlePhases"
+local effectImplementations = require "util.effectImplementations"
 
 local Game = {}
 Game.__index = Game
@@ -31,7 +32,7 @@ function Game:init()
     self.gridManager = GridManager:new("assets/maps/ForestCampMeta", "assets/maps/ForestCamp.png", screenW, screenH)
     self.characterManager = CharacterManager:new(self.gridManager)
     self.battleManager = BattleManager:new(self.characterManager)
-
+    self.effectImplementations = effectImplementations.effectImplementations
 end
 
 function Game:update(dt)
@@ -107,7 +108,7 @@ function Game:mousepressed(x, y, button)
             end
             self.battleManager:attack(clicked)
         else
-            print("No target at clicked cell.")
+            
         end
         return
     end
@@ -119,6 +120,9 @@ function Game:keypressed(key)
     end
     if key == "a" then
         self.battleManager:enterAttackPhase()
+    end
+    if self.battleManager.phase == Phase.USE_ABILITY and key == "u" then
+        self.battleManager:useAbility(key, self.battleManager.selectedCharacter)
     end
     if key == "p" and not love.keyboard.isDown("lshift", "rshift") then
         self.battleManager:passCharacterTurn()

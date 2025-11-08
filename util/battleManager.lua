@@ -4,6 +4,7 @@ BattleManager.__index = BattleManager
 
 local Phase = require "../enums.battlePhases"
 local PlayerRoster = require "util.playerRoster"
+local effectImplementations = require "util.effectImplementations"
 
 
 function BattleManager:new(characterManager)
@@ -24,6 +25,7 @@ function BattleManager:new(characterManager)
     self.selectedCharacter = nil
     self.isBattleOver = false
     self.winner = nil
+    self.extradmg = 0
     return self
 end
 
@@ -129,7 +131,7 @@ function BattleManager:moveCharacter(gridX, gridY)
             if self.characterManager then
                 self.characterManager:clearHighlight()
             end
-            self.phase = Phase.ATTACK
+            self.phase = Phase.USE_ABILITY
             print(char.name .. " moved to (" .. gridX .. "," .. gridY .. ")")
             return
         end
@@ -297,11 +299,31 @@ function BattleManager:passCharacterTurn()
     end
 end
 
+function BattleManager:useAbility(key, char)
+    if key == "u" then
+        self.extradmg = char.abilities.ability1:effect()
+        self.phase = Phase.ATTACK
+    end
+end
+
 function BattleManager:calculateDamage(attacker, target)
     local atk = (attacker.stats and attacker.stats.attack) or 0
     local def = (target.stats and target.stats.defense) or 0
-    local dmg = atk - def
-    return math.max(0, dmg)
+    local baseDamage = math.max(0, atk - def)
+
+    if effectImplementations.berserkTurns and effectImplementations.berserkTurns.modifyOutgoingDamage then
+        baseDamage = effectImplementations.berserkTurns.modifyOutgoingDamage(baseDamage, attacker)
+    end
+
+    if effectImplementations.shieldTurns and effectImplementations.shieldTurns.modifyIncomingDamage then
+        baseDamage = effectImplementations.shieldTurns.modifyIncomingDamage(baseDamage, target)
+    end
+
+    if effectImplementations.hasLastStand and effectImplementations.hasLastStand.onDamageTaken then
+        baseDamage = effectImplementations.hasLastStand.onDamageTaken(target, baseDamage)
+    end
+
+    return baseDamage + self.extradmg
 end
 
 function BattleManager:checkEndOfTurn()
@@ -318,6 +340,17 @@ end
 function BattleManager:endTurn()
     print(self:getCurrentPlayer().name .. "'s turn ended.")
     self.phase = Phase.END_TURN
+
+    for _, player in ipairs(self.players) do
+        for _, char in ipairs(player.team) do
+            for effectName, effData in pairs(char.effects or {}) do
+                local impl = effectImplementations[effectName]
+                if impl and impl.onTurnEnd then
+                    impl.onTurnEnd(char)
+                end
+            end
+        end
+    end
 
     self.actedCharacters = {}
     self.currentPlayerIndex = (self.currentPlayerIndex % #self.players) + 1

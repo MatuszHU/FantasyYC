@@ -18,7 +18,7 @@
 |  2  | **Iron Wall Formation** | Buff    | For 3 turns, increases Defense and Resistanse.   | + 10 DEF, + 10 RES  | 3        |
 |  3  | **Battle-Hardened**     | Passive | Permanently increases base Defense by 10.        | + 10 DEF            | -        |
 |  4  | **Last Stand**          | Passive | Once per battle, survives a fatal hit with 1 HP. | -                   | -        |
-|  5  | **Aegis Charge**        | Shield  | Shields all allies for 1 turn                    | 50% dmg reduction   | 6        |
+|  5  | **Aegis Charge**        | Shield  | Rases deffense for 1 turn.                       | 90% dmg reduction   | 6        |
 
 ## Wizard
 
