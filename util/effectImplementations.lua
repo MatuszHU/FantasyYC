@@ -101,6 +101,69 @@ effectImplementations.battleCryTurns = {
     end
 }
 
+effectImplementations.ironWallTurns = {
+    apply = function(character)
+        if not character.effects.ironWallTurns then
+            character.effects.ironWallTurns = { remaining = 3, active = true }
+            character.stats.defense = (character.stats.defense or 0) + 10
+            character.stats.resistance = (character.stats.resistance or 0) + 10
+            print(character.name .. " takes formation! DEF and RES increased.")
+        end
+    end,
+
+    onTurnEnd = function(character)
+        local eff = character.effects.ironWallTurns
+        if eff and eff.active then
+            eff.remaining = eff.remaining - 1
+            if eff.remaining <= 0 then
+                character.stats.defense = character.stats.defense - 10
+                character.stats.resistance = character.stats.resistance - 10
+                character.effects.ironWallTurns = nil
+                print(character.name .. "'s Iron Wall Formation ends.")
+            end
+        end
+    end
+}
+
+effectImplementations.hasLastStand = {
+    onDamageTaken = function(character, damage)
+        if character.effects.hasLastStand and character.effects.hasLastStand == true then
+            if (character.stats.hp - damage) <= 0 then
+                character.stats.hp = 1
+                character.effects.hasLastStand = false
+                print(character.name .. " refuses to fall! Last Stand activated.")
+                return 0 -- negate lethal damage
+            end
+        end
+        return damage
+    end
+}
+
+effectImplementations.shieldTurns = {
+    apply = function(character)
+        character.effects.shieldTurns = { remaining = 1, active = true }
+        print(character.name .. " braces for impact! Incoming damage reduced.")
+    end,
+
+    modifyIncomingDamage = function(damage, character)
+        if character.effects.shieldTurns and character.effects.shieldTurns.active then
+            return damage * 0.1 -- 90% reduction
+        end
+        return damage
+    end,
+
+    onTurnEnd = function(character)
+        local eff = character.effects.shieldTurns
+        if eff and eff.active then
+            eff.remaining = eff.remaining - 1
+            if eff.remaining <= 0 then
+                character.effects.shieldTurns = nil
+                print(character.name .. "'s Aegis Charge fades.")
+            end
+        end
+    end
+}
+
 function effectImplementations:updateEffects(char)
     if not char.effects then return end
 

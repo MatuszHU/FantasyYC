@@ -1,4 +1,5 @@
 local kabilities = require "util.abilities.knightAbilities"
+local cabilities = require "util.abilities.cavalryAbilities"
 
 return {
     knight = {
@@ -21,7 +22,7 @@ return {
             fow = 2,
             movement = 4
         },
-        abilities = kabilities
+        abilities = cabilities
     },
     wizard = {
         name = "wizard",

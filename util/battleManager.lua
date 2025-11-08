@@ -307,6 +307,14 @@ function BattleManager:calculateDamage(attacker, target)
         baseDamage = effectImplementations.berserkTurns.modifyOutgoingDamage(baseDamage, attacker)
     end
 
+    if effectImplementations.shieldTurns and effectImplementations.shieldTurns.modifyIncomingDamage then
+        baseDamage = effectImplementations.shieldTurns.modifyIncomingDamage(baseDamage, target)
+    end
+
+    if effectImplementations.hasLastStand and effectImplementations.hasLastStand.onDamageTaken then
+        baseDamage = effectImplementations.hasLastStand.onDamageTaken(target, baseDamage)
+    end
+
     return baseDamage
 end
 
