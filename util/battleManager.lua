@@ -308,8 +308,15 @@ function BattleManager:useAbility(key, char)
 end
 
 function BattleManager:calculateDamage(attacker, target)
-    local atk = (attacker.stats and attacker.stats.attack) or 0
-    local def = (target.stats and target.stats.defense) or 0
+    local atk = 0
+    local def = 0
+    if attacker.class == "wizard" or attacker.class == "priest" then
+        atk = (attacker.stats and attacker.stats.magic) or 0
+        def = (target.stats and target.stats.resistance) or 0
+    else
+        atk = (attacker.stats and attacker.stats.attack) or 0
+        def = (target.stats and target.stats.defense) or 0
+    end
     local baseDamage = math.max(0, atk - def)
 
     if effectImplementations.berserkTurns and effectImplementations.berserkTurns.modifyOutgoingDamage then
