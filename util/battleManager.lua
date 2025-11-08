@@ -301,7 +301,8 @@ end
 
 function BattleManager:useAbility(key, char)
     if key == "u" then
-        self.extradmg = char.abilities.ability1:effect()
+        print(char.stats.hp)
+        self.extradmg = char.abilities.ability1.effect(char)
         self.phase = Phase.ATTACK
     end
 end

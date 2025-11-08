@@ -4,7 +4,7 @@ return {
         cooldown = 2,
         passive = false,
         effect = function(user)
-            return user.stats.attack * 1.35
+            return math.floor(user.stats.attack * 1.35 - user.stats.attack)
         end
     },
     ability2 = {

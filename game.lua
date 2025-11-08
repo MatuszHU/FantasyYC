@@ -122,6 +122,7 @@ function Game:keypressed(key)
         self.battleManager:enterAttackPhase()
     end
     if self.battleManager.phase == Phase.USE_ABILITY and key == "u" then
+        print(self.battleManager.selectedCharacter.name)
         self.battleManager:useAbility(key, self.battleManager.selectedCharacter)
     end
     if key == "p" and not love.keyboard.isDown("lshift", "rshift") then

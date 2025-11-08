@@ -14,7 +14,7 @@ end
 function CharacterManager:addCharacter(name, race, class, spriteIndex, gridX, gridY)
     local char = Character(name, race, class, spriteIndex, gridX, gridY)
     char:loadSprite()
-    char:setStats() 
+    char:setStats()
 
     -- dynamically calculate scale based on sprite size
     local cw, ch = self.gridManager.cellW, self.gridManager.cellH
