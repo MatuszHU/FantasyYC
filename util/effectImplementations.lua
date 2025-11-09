@@ -164,4 +164,31 @@ effectImplementations.shieldTurns = {
     end
 }
 
+effectImplementations.mindFocusTurns = {
+    apply = function(character)
+        if not character.effects.mindFocusTurns then
+            character.effects.mindFocusTurns = { remaining = 3, active = true }
+
+            character.stats.accuracy = (character.stats.accuracy or 0) + 10
+            character.stats.evasion = (character.stats.evasion or 0) + 10
+
+            print(character.name .. " focuses their mind! Accuracy and Evasion increased.")
+        end
+    end,
+
+    onTurnEnd = function(character)
+        local eff = character.effects.mindFocusTurns
+        if eff and eff.active then
+            eff.remaining = eff.remaining - 1
+            if eff.remaining <= 0 then
+                eff.active = false
+                character.stats.accuracy = character.stats.accuracy - 10
+                character.stats.evasion = character.stats.evasion - 10
+                character.effects.mindFocusTurns = nil
+                print(character.name .. "'s concentration fades.")
+            end
+        end
+    end
+}
+
 return effectImplementations
