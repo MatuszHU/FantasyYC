@@ -7,6 +7,7 @@ local PlayerRoster = require "util.playerRoster"
 local effectImplementations = require "util.effectImplementations"
 local TurnManager = require "util.battle.turnManager"
 local AbilityManager = require "util.battle.abilityManager"
+local CombatManager = require "util.battle.combatManager"
 
 
 function BattleManager:new(characterManager)
@@ -33,6 +34,7 @@ function BattleManager:new(characterManager)
 
     self.turn = TurnManager:new(self)
     self.ability = AbilityManager:new(self)
+    self.combat = CombatManager:new(self)
 
 
     return self
@@ -201,74 +203,7 @@ function BattleManager:moveCharacter(gridX, gridY)
 end
 
 function BattleManager:attack(target)
-    if self.phase ~= Phase.ATTACK or not self.selectedCharacter then return end
-    if not target then
-        print("No target selected.")
-        return
-    end
-    if self:isCharacterOnCurrentTeam(target) then
-        print("Cannot attack allies!")
-        return
-    end
-
-    local attacker = self.selectedCharacter
-
-    local dist = math.abs(attacker.gridX - target.gridX) + math.abs(attacker.gridY - target.gridY)
-    local range = attacker.stats.attackRange or 1
-    if dist > range then
-        print(string.format("%s cannot reach %s (distance %d, range %d)", attacker.name, target.name, dist, range))
-        return
-    end
-
-    -- Attack execution
-    local damage = self:calculateDamage(attacker, target)
-    target.stats.hp = math.max(0, target.stats.hp - damage)
-    print(attacker.name .. " attacks " .. target.name .. " for " .. damage .. " damage! HP left: " .. target.stats.hp)
-
-    self.extradmg = 0
-    self.actedCharacters[attacker] = true
-    self.selectedCharacter = nil
-    self.phase = Phase.SELECT
-
-    if target.stats.hp <= 0 then
-        print(target.name .. " has been defeated.")
-        target.isDefeated = true
-    end
-
-    -- Check victory
-    local playerAlive = false
-    for _, c in ipairs(self.players[1].team) do
-        if not c.isDefeated then
-            playerAlive = true
-            break
-        end
-    end
-
-    local aiAlive = false
-    for _, c in ipairs(self.players[2].team) do
-        if not c.isDefeated then
-            aiAlive = true
-            break
-        end
-    end
-
-    if not playerAlive or not aiAlive then
-        local winner = playerAlive and self.players[1].name or self.players[2].name
-        print("Battle over! " .. winner .. " wins!")
-
-        self.winner = winner
-        self.isBattleOver = true
-        self.phase = Phase.IDLE
-        return
-    end
-
-    if self.characterManager then
-        self.characterManager:clearHighlight()
-    end
-
-    if self:checkEndOfTurn() then
-        self:endTurn()
-    end
+    return self.combat:attack(target)
 end
 
 function BattleManager:enterAttackPhase()
@@ -368,30 +303,7 @@ function BattleManager:useAbility(key, char)
 end
 
 function BattleManager:calculateDamage(attacker, target)
-    local atk = 0
-    local def = 0
-    if attacker.class == "wizard" or attacker.class == "priest" then
-        atk = (attacker.stats and attacker.stats.magic) or 0
-        def = (target.stats and target.stats.resistance) or 0
-    else
-        atk = (attacker.stats and attacker.stats.attack) or 0
-        def = (target.stats and target.stats.defense) or 0
-    end
-    local baseDamage = math.max(0, atk - def)
-
-    if effectImplementations.berserkTurns and effectImplementations.berserkTurns.modifyOutgoingDamage then
-        baseDamage = effectImplementations.berserkTurns.modifyOutgoingDamage(baseDamage, attacker)
-    end
-
-    if effectImplementations.shieldTurns and effectImplementations.shieldTurns.modifyIncomingDamage then
-        baseDamage = effectImplementations.shieldTurns.modifyIncomingDamage(baseDamage, target)
-    end
-
-    if effectImplementations.hasLastStand and effectImplementations.hasLastStand.onDamageTaken then
-        baseDamage = effectImplementations.hasLastStand.onDamageTaken(target, baseDamage)
-    end
-
-    return baseDamage + self.extradmg
+    return self.combat:calculateDamage(attacker, target)
 end
 
 function BattleManager:checkEndOfTurn()
