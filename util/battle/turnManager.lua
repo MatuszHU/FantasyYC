@@ -1,4 +1,3 @@
--- util/battle/TurnManager.lua
 local TurnManager = {}
 TurnManager.__index = TurnManager
 
