@@ -8,6 +8,8 @@ local effectImplementations = require "util.effectImplementations"
 local TurnManager = require "util.battle.turnManager"
 local AbilityManager = require "util.battle.abilityManager"
 local CombatManager = require "util.battle.combatManager"
+local SelectionManager = require "util.battle.selectionManager"
+
 
 
 function BattleManager:new(characterManager)
@@ -35,6 +37,7 @@ function BattleManager:new(characterManager)
     self.turn = TurnManager:new(self)
     self.ability = AbilityManager:new(self)
     self.combat = CombatManager:new(self)
+    self.selection = SelectionManager:new(self)
 
 
     return self
@@ -159,26 +162,16 @@ function BattleManager:isCharacterOnCurrentTeam(char)
     return false
 end
 
-function BattleManager:selectCharacter(char)
-    if char.isDefeated then
-        print("Cannot select defeated character!")
-        return false
-    end
-    if not self:isCharacterOnCurrentTeam(char) then
-        print("Cannot control enemy units!")
-        return false
-    end
-    if self.actedCharacters[char] then
-        print(char.name .. " has already acted this turn.")
-        return false
-    end
-    self.selectedCharacter = char
-    self.phase = Phase.MOVE
-    print("Selected " .. char.name .. " to act.")
-    if self.characterManager then
-        self.characterManager:highlightReachable(char)
-    end
-    return true
+function BattleManager:selectCharacter(cell)
+    return self.selection:selectCharacter(cell)
+end
+
+function BattleManager:selectTarget(cell)
+    return self.selection:selectTarget(cell)
+end
+
+function BattleManager:deselect(cell)
+    return self.selection:deselect(cell)
 end
 
 function BattleManager:moveCharacter(gridX, gridY)
@@ -207,83 +200,11 @@ function BattleManager:attack(target)
 end
 
 function BattleManager:enterAttackPhase()
-    if not self.selectedCharacter then
-        print("No character selected to attack.")
-        return
-    end
-
-    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT and self.phase ~= Phase.USE_ABILITY then
-        print("Cannot enter attack phase right now.")
-        return
-    end
-
-    self.phase = Phase.ATTACK
-    print(self.selectedCharacter.name .. " is preparing to attack!")
-
-    -- optional: highlight enemies in range
-    local char = self.selectedCharacter
-    local attackRange = char.stats.attackRange or 1
-    local enemies = {}
-
-    local currentPlayer = self:getCurrentPlayer()
-    local enemyPlayer = (self.currentPlayerIndex == 1) and self.players[2] or self.players[1]
-    for _, enemy in ipairs(enemyPlayer.team) do
-        if not enemy.isDefeated then
-            local dx = math.abs(enemy.gridX - char.gridX)
-            local dy = math.abs(enemy.gridY - char.gridY)
-            if (dx + dy) <= attackRange then
-                table.insert(enemies, { x = enemy.gridX, y = enemy.gridY })
-            end
-        end
-    end
-
-    if #enemies > 0 then
-        self.characterManager.reachableCells = nil
-        self.characterManager.gridManager:highlightCells(enemies, 1, 0, 0, 0.4)
-    else
-        print("No enemies in attack range.")
-        self.phase = Phase.MOVE
-    end
+    return self.selection:enterAttackPhase()
 end
 
 function BattleManager:enterUseAbilityPhase()
-    if not self.selectedCharacter then
-        print("No character selected to use ability.")
-        return
-    end
-
-    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT then
-        print("Cannot enter use ability phase right now.")
-        return
-    end
-
-    self.phase = Phase.USE_ABILITY
-    print(self.selectedCharacter.name .. " is preparing to use ability!")
-
-    -- optional: highlight enemies in range
-    local char = self.selectedCharacter
-    local attackRange = char.stats.attackRange or 1
-    local enemies = {}
-
-    local currentPlayer = self:getCurrentPlayer()
-    local enemyPlayer = (self.currentPlayerIndex == 1) and self.players[2] or self.players[1]
-    for _, enemy in ipairs(enemyPlayer.team) do
-        if not enemy.isDefeated then
-            local dx = math.abs(enemy.gridX - char.gridX)
-            local dy = math.abs(enemy.gridY - char.gridY)
-            if (dx + dy) <= attackRange then
-                table.insert(enemies, { x = enemy.gridX, y = enemy.gridY })
-            end
-        end
-    end
-
-    if #enemies > 0 then
-        self.characterManager.reachableCells = nil
-        self.characterManager.gridManager:highlightCells(enemies, 1, 0, 0, 0.4)
-    else
-        print("No enemies in attack range.")
-        self.phase = Phase.MOVE
-    end
+    return self.selection:enterAbilityPhase()
 end
 
 function BattleManager:passTurn()
