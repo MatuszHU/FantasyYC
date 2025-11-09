@@ -25,6 +25,7 @@ function BattleManager:new(characterManager)
     self.selectedCharacter = nil
     self.isBattleOver = false
     self.winner = nil
+    self.playerWinCount = 0
     self.extradmg = 0
     self.abilityCooldowns = {}
     return self
@@ -68,11 +69,36 @@ end
 
 function BattleManager:endBattle()
     print("Ending battle...")
+    local playerTeam = self.playerRoster:getTeam()
 
     if self.winner == "Player" then
-        self:levelUpCharacters()
+        self.playerWinCount = self.playerWinCount + 1
     end
 
+    if #playerTeam < 6 then
+        local raceList = {"dwarf", "elf", "human"}
+        local race = raceList[math.random(1, #raceList)]
+        local classList = {"knight", "cavalry", "wizard", "priest", "thief"}
+        local class = classList[math.random(1, #classList)]
+        local newAllyName = self.playerRoster.nameManager:getRandomName(race, "male")
+        local spawnCol = 3 + #playerTeam  -- example offset spawn
+        local spawnRow = 8 + (#playerTeam % 2)
+
+        local newAlly = self.characterManager:addCharacter(
+            newAllyName,
+            race,
+            class,
+            math.random(1, 6),
+            spawnCol,
+            spawnRow
+        )
+
+        table.insert(playerTeam, newAlly)
+        print("Added new ally:", newAlly.name)
+    end
+
+
+    -- === Restore and reuse player roster ===
     for _, char in ipairs(self.playerRoster:getTeam()) do
         char.effects = {}
     end
@@ -96,13 +122,22 @@ function BattleManager:endBattle()
     end
     self.characterManager.characters = newList
 
-    local newAiTeam = {
-        self.characterManager:addCharacter(self.playerRoster.nameManager:getRandomName("orc","male"), "orc", "knight", 1, 8, 4),
-        self.characterManager:addCharacter(self.playerRoster.nameManager:getRandomName("orc","male"), "orc", "knight", 1, 9, 5)
-    }
+    local aiTeam = {}
+    local aiTeamSize = math.random(#playerTeam, (#playerTeam + 2))  -- variable difficulty, can adjust later
+    for i = 1, aiTeamSize do
+        local name = self.playerRoster.nameManager:getRandomName("orc", "male")
+        local raceList = {"orc", "goblin"}
+        local race = raceList[math.random(1, #raceList)]
+        local classList = {"knight", "cavalry", "wizard", "priest", "thief"}
+        local class = classList[math.random(1, #classList)]
+        local x = 25 + love.math.random(0, 3)
+        local y = 5 + love.math.random(0, 10)
+        local aiChar = self.characterManager:addCharacter(name, race, class, math.random(1, 6), x, y)
+        table.insert(aiTeam, aiChar)
+    end
 
     self.characterManager:clearHighlight()
-    self:assignTeams(self.playerRoster:getTeam(), newAiTeam)
+    self:assignTeams(self.playerRoster:getTeam(), aiTeam)
 
     self:startBattle()
     print("A new battle begins! Your roster returns to fight again!")
@@ -153,7 +188,7 @@ function BattleManager:moveCharacter(gridX, gridY)
             if self.characterManager then
                 self.characterManager:clearHighlight()
             end
-            self.phase = Phase.USE_ABILITY
+            self.phase = Phase.ATTACK
             print(char.name .. " moved to (" .. gridX .. "," .. gridY .. ")")
             return
         end
@@ -246,6 +281,46 @@ function BattleManager:enterAttackPhase()
 
     self.phase = Phase.ATTACK
     print(self.selectedCharacter.name .. " is preparing to attack!")
+
+    -- optional: highlight enemies in range
+    local char = self.selectedCharacter
+    local attackRange = char.stats.attackRange or 1
+    local enemies = {}
+
+    local currentPlayer = self:getCurrentPlayer()
+    local enemyPlayer = (self.currentPlayerIndex == 1) and self.players[2] or self.players[1]
+    for _, enemy in ipairs(enemyPlayer.team) do
+        if not enemy.isDefeated then
+            local dx = math.abs(enemy.gridX - char.gridX)
+            local dy = math.abs(enemy.gridY - char.gridY)
+            if (dx + dy) <= attackRange then
+                table.insert(enemies, { x = enemy.gridX, y = enemy.gridY })
+            end
+        end
+    end
+
+    if #enemies > 0 then
+        self.characterManager.reachableCells = nil
+        self.characterManager.gridManager:highlightCells(enemies, 1, 0, 0, 0.4)
+    else
+        print("No enemies in attack range.")
+        self.phase = Phase.MOVE
+    end
+end
+
+function BattleManager:enterUseAbilityPhase()
+    if not self.selectedCharacter then
+        print("No character selected to use ability.")
+        return
+    end
+
+    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT then
+        print("Cannot enter use ability phase right now.")
+        return
+    end
+
+    self.phase = Phase.USE_ABILITY
+    print(self.selectedCharacter.name .. " is preparing to use ability!")
 
     -- optional: highlight enemies in range
     local char = self.selectedCharacter

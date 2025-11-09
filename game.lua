@@ -107,8 +107,6 @@ function Game:mousepressed(x, y, button)
                 return
             end
             self.battleManager:attack(clicked)
-        else
-            
         end
         return
     end
