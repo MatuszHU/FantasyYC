@@ -107,8 +107,6 @@ function Game:mousepressed(x, y, button)
                 return
             end
             self.battleManager:attack(clicked)
-        else
-            
         end
         return
     end
@@ -121,7 +119,7 @@ function Game:keypressed(key)
     if key == "a" then
         self.battleManager:enterAttackPhase()
     end
-    if self.battleManager.phase == Phase.USE_ABILITY and key == "u" then
+    if key == "u" then
         print(self.battleManager.selectedCharacter.name)
         self.battleManager:useAbility(key, self.battleManager.selectedCharacter)
     end
