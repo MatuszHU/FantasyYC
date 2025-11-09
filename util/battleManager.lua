@@ -55,31 +55,31 @@ function BattleManager:endBattle()
     print("Ending battle...")
     local playerTeam = self.playerRoster:getTeam()
 
-    if self.winner == "Player" then
-        self.winCount = self.winCount + 1
+    --if self.winner == "Player" then
+    self.playerWinCount = self.playerWinCount + 1
 
-        if #playerTeam < 6 then
-            local raceList = {"dwarf", "elf", "human"}
-            local race = raceList[math.random(1, #raceList)]
-            local classList = {"knight", "cavalry", "wizard", "priest", "thief"}
-            local class = classList[math.random(1, #classList)]
-            local newAllyName = self.playerRoster.nameManager:getRandomName(race, "male")
-            local spawnCol = 3 + #playerTeam  -- example offset spawn
-            local spawnRow = 8 + (#playerTeam % 2)
+    if #playerTeam < 6 then
+        local raceList = {"dwarf", "elf", "human"}
+        local race = raceList[math.random(1, #raceList)]
+        local classList = {"knight", "cavalry", "wizard", "priest", "thief"}
+        local class = classList[math.random(1, #classList)]
+        local newAllyName = self.playerRoster.nameManager:getRandomName(race, "male")
+        local spawnCol = 3 + #playerTeam  -- example offset spawn
+        local spawnRow = 8 + (#playerTeam % 2)
 
-            local newAlly = self.characterManager:addCharacter(
-                newAllyName,
-                race,
-                class,
-                math.random(1, 6),
-                spawnCol,
-                spawnRow
-            )
+        local newAlly = self.characterManager:addCharacter(
+            newAllyName,
+            race,
+            class,
+            math.random(1, 6),
+            spawnCol,
+            spawnRow
+        )
 
-            table.insert(playerTeam, newAlly)
-            print("Added new ally:", newAlly.name)
-        end
+        table.insert(playerTeam, newAlly)
+        print("Added new ally:", newAlly.name)
     end
+    --end
 
     -- === Restore and reuse player roster ===
     self.playerRoster:resetAfterBattle()
