@@ -119,10 +119,11 @@ function Game:keypressed(key)
     if key == "a" then
         self.battleManager:enterAttackPhase()
     end
-    if key == "u" then
-        print(self.battleManager.selectedCharacter.name)
+    if (self.battleManager.phase == Phase.USE_ABILITY or self.battleManager.phase == Phase.MOVE) and (key == "1" or key == "2" or key == "3" or key == "4" or key == "5") then
         self.battleManager:useAbility(key, self.battleManager.selectedCharacter)
+        return
     end
+
     if key == "p" and not love.keyboard.isDown("lshift", "rshift") then
         self.battleManager:passCharacterTurn()
     elseif key == "p" and (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then

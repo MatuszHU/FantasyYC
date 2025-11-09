@@ -17,8 +17,9 @@ function PlayerRoster:new(characterManager)
     return self
 end
 
-function PlayerRoster:addCharacter(name, race, class, level, gridX, gridY)
-    local char = self.characterManager:addCharacter(name, race, class, level, gridX, gridY)
+function PlayerRoster:addCharacter(name, race, class, spriteIndex, gridX, gridY, level)
+    local char = self.characterManager:addCharacter(name, race, class, spriteIndex, gridX, gridY)
+    char.level = level or 1
     table.insert(self.characters, char)
     print("Recruited new character: " .. name)
 end

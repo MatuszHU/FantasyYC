@@ -27,6 +27,7 @@ function BattleManager:new(characterManager)
     self.winner = nil
     self.playerWinCount = 0
     self.extradmg = 0
+    self.abilityCooldowns = {}
     return self
 end
 
@@ -42,8 +43,23 @@ function BattleManager:startBattle()
     self.selectedCharacter = nil
     self.isBattleOver = false
     self.winner = nil
+    self.abilityCooldowns = {}
+    
+    for _, player in ipairs(self.players) do
+        for _, char in ipairs(player.team) do
+            char.effects = {}
+            
+            char:setStats()
+            
+            char.passivesApplied = nil
+            
+            self:applyPassiveAbilities(char)
+        end
+    end
+    
     print("Battle started! " .. self:getCurrentPlayer().name .. " goes first.")
 end
+
 
 function BattleManager:levelUpCharacters()
     for _, char in ipairs(self.playerRoster:getTeam()) do
@@ -83,17 +99,25 @@ function BattleManager:endBattle()
 
 
     -- === Restore and reuse player roster ===
+    for _, char in ipairs(self.playerRoster:getTeam()) do
+        char.effects = {}
+    end
+
     self.playerRoster:resetAfterBattle()
 
-    -- Remove all characters except your roster ones
     local newList = {}
     for _, c in ipairs(self.characterManager.characters) do
+        local isRosterChar = false
         for _, pc in ipairs(self.playerRoster:getTeam()) do
             if c == pc then
+                isRosterChar = true
                 table.insert(newList, c)
-            else
-                self.playerRoster.nameManager:removeName(c.name)
+                break
             end
+        end
+        
+        if not isRosterChar then
+            self.playerRoster.nameManager:removeName(c.name)
         end
     end
     self.characterManager.characters = newList
@@ -112,7 +136,6 @@ function BattleManager:endBattle()
         table.insert(aiTeam, aiChar)
     end
 
-    -- Assign updated teams
     self.characterManager:clearHighlight()
     self:assignTeams(self.playerRoster:getTeam(), aiTeam)
 
@@ -199,6 +222,7 @@ function BattleManager:attack(target)
     target.stats.hp = math.max(0, target.stats.hp - damage)
     print(attacker.name .. " attacks " .. target.name .. " for " .. damage .. " damage! HP left: " .. target.stats.hp)
 
+    self.extradmg = 0
     self.actedCharacters[attacker] = true
     self.selectedCharacter = nil
     self.phase = Phase.SELECT
@@ -250,7 +274,7 @@ function BattleManager:enterAttackPhase()
         return
     end
 
-    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT then
+    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT and self.phase ~= Phase.USE_ABILITY then
         print("Cannot enter attack phase right now.")
         return
     end
@@ -373,21 +397,70 @@ function BattleManager:passCharacterTurn()
     end
 end
 
+function BattleManager:applyPassiveAbilities(char)
+    if not char.abilities then return end
+
+     if char.passivesApplied then return end
+    
+    for abilityKey, ability in pairs(char.abilities) do
+        if ability.passive then
+            ability.effect(char)
+            print(char.name .. " passive ability activated: " .. ability.name)
+        end
+    end
+
+    char.passivesApplied = true
+end
+
 function BattleManager:useAbility(key, char)
-    if self.phase ~= Phase.USE_ABILITY or not self.selectedCharacter then return end
-    if not target then
-        print("No target selected.")
+    if not char then
+        print("No character selected to use ability.")
         return
     end
-    if self:isCharacterOnCurrentTeam(target) then
-        print("Cannot attack allies!")
+    
+    local abilityIndex = tonumber(key)
+    if not abilityIndex or abilityIndex < 1 or abilityIndex > 5 then
+        print("Invalid ability key.")
         return
     end
-    if self.phase == Phase.USE_ABILITY then
-        print(char.stats.hp)
-        self.extradmg = char.abilities.ability1.effect(char)
-        self.phase = Phase.ATTACK
+    
+    local abilityKey = "ability" .. abilityIndex
+    local ability = char.abilities[abilityKey]
+    
+    if not ability then
+        print(char.name .. " does not have ability " .. abilityIndex)
+        return
     end
+    
+    if ability.passive then
+        print(ability.name .. " is a passive ability and cannot be activated.")
+        return
+    end
+    
+    if not self.abilityCooldowns[char] then
+        self.abilityCooldowns[char] = {}
+    end
+    
+    local currentCooldown = self.abilityCooldowns[char][abilityKey] or 0
+    if currentCooldown > 0 then
+        print(ability.name .. " is on cooldown for " .. currentCooldown .. " more turns.")
+        return
+    end
+    
+    local result = ability.effect(char)
+    
+    self.abilityCooldowns[char][abilityKey] = ability.cooldown
+    print(char.name .. " uses " .. ability.name .. "!")
+    print("  [Cooldown: " .. ability.cooldown .. " turns]")
+    
+    if type(result) == "number" then
+        self.extradmg = result
+        print("  (+" .. result .. " extra damage)")
+    else
+        self.extradmg = 0
+    end
+    
+    self:enterAttackPhase()
 end
 
 function BattleManager:calculateDamage(attacker, target)
@@ -429,16 +502,31 @@ function BattleManager:checkEndOfTurn()
 end
 
 function BattleManager:endTurn()
-    print(self:getCurrentPlayer().name .. "'s turn ended.")
+    local currentPlayer = self:getCurrentPlayer()
+    print(currentPlayer.name .. "'s turn ended.")
     self.phase = Phase.END_TURN
 
-    for _, player in ipairs(self.players) do
-        for _, char in ipairs(player.team) do
-            for effectName, effData in pairs(char.effects or {}) do
-                local impl = effectImplementations[effectName]
-                if impl and impl.onTurnEnd then
-                    impl.onTurnEnd(char)
+    for _, char in ipairs(currentPlayer.team) do
+        if self.abilityCooldowns[char] then
+            for abilityKey, cooldown in pairs(self.abilityCooldowns[char]) do
+                if cooldown > 0 then
+                    self.abilityCooldowns[char][abilityKey] = cooldown - 1
+                    if self.abilityCooldowns[char][abilityKey] == 0 then
+                        local ability = char.abilities[abilityKey]
+                        if ability then
+                            print("  " .. char.name .. "'s " .. ability.name .. " is ready!")
+                        end
+                    end
                 end
+            end
+        end
+    end
+
+    for _, char in ipairs(currentPlayer.team) do
+        for effectName, effData in pairs(char.effects or {}) do
+            local impl = effectImplementations[effectName]
+            if impl and impl.onTurnEnd then
+                impl.onTurnEnd(char)
             end
         end
     end
@@ -450,8 +538,10 @@ function BattleManager:endTurn()
     if self.characterManager then
         self.characterManager:clearHighlight()
     end
+    
     print("Now it's " .. self:getCurrentPlayer().name .. "'s turn!")
 end
+
 
 function BattleManager:update(dt)
     -- Future: AI logic
