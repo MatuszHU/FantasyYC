@@ -32,6 +32,7 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
         abilities = classes[classKey].abilities,
         spriteIndex = 1,
         isDefeated = false,
+        passivesApplied = nil,
         offsetX = 0,
         gridX = gridX,
         gridY = gridY,
@@ -43,7 +44,6 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
             end
             self.stats.max_hp = self.stats.hp
             self.stats.attackRange = 1
-            self.bonusStats = {}
         end,
         levelUp = function(self)
             self.level = self.level + 1
