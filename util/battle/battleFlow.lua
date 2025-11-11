@@ -1,8 +1,7 @@
--- util/battleFlow.lua
-local Phase = require "../enums.battlePhases"
-
 local BattleFlow = {}
 BattleFlow.__index = BattleFlow
+
+local Phase = require "../enums.battlePhases"
 
 function BattleFlow:new(battle)
     local self = setmetatable({}, BattleFlow)

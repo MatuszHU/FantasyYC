@@ -36,10 +36,10 @@ function BattleManager:new(characterManager)
     self.extradmg = 0
     self.abilityCooldowns = {}
 
-    self.turn = TurnManager:new(self)
-    self.ability = AbilityManager:new(self)
-    self.combat = CombatManager:new(self)
-    self.selection = SelectionManager:new(self)
+    self.turnManager= TurnManager:new(self)
+    self.abilityManager = AbilityManager:new(self)
+    self.combatManager = CombatManager:new(self)
+    self.selectionManager = SelectionManager:new(self)
     self.battleFlow = BattleFlow:new(self)
     self.effectManager = EffectManager:new(self, effectImplementations)
 
@@ -68,7 +68,7 @@ function BattleManager:endBattle()
 end
 
 function BattleManager:getCurrentPlayer()
-    return self.turn:getCurrentPlayer()
+    return self.turnManager:getCurrentPlayer()
 end
 
 function BattleManager:isCharacterOnCurrentTeam(char)
@@ -79,15 +79,15 @@ function BattleManager:isCharacterOnCurrentTeam(char)
 end
 
 function BattleManager:selectCharacter(cell)
-    return self.selection:selectCharacter(cell)
+    return self.selectionManager:selectCharacter(cell)
 end
 
 function BattleManager:selectTarget(cell)
-    return self.selection:selectTarget(cell)
+    return self.selectionManager:selectTarget(cell)
 end
 
 function BattleManager:deselect(cell)
-    return self.selection:deselect(cell)
+    return self.selectionManager:deselect(cell)
 end
 
 function BattleManager:moveCharacter(gridX, gridY)
@@ -112,43 +112,43 @@ function BattleManager:moveCharacter(gridX, gridY)
 end
 
 function BattleManager:attack(target)
-    return self.combat:attack(target)
+    return self.combatManager:attack(target)
 end
 
 function BattleManager:enterAttackPhase()
-    return self.selection:enterAttackPhase()
+    return self.selectionManager:enterAttackPhase()
 end
 
 function BattleManager:enterUseAbilityPhase()
-    return self.selection:enterAbilityPhase()
+    return self.selectionManager:enterAbilityPhase()
 end
 
 function BattleManager:passTurn()
-    return self.turn:passTurn()
+    return self.turnManager:passTurn()
 end
 
 function BattleManager:passCharacterTurn()
-    return self.turn:passCharacterTurn()
+    return self.turnManager:passCharacterTurn()
 end
 
 function BattleManager:applyPassiveAbilities(char)
-    return self.ability:applyPassiveAbilities(char)
+    return self.abilityManager:applyPassiveAbilities(char)
 end
 
 function BattleManager:useAbility(key, char)
-    return self.ability:useAbility(key, char)
+    return self.abilityManager:useAbility(key, char)
 end
 
 function BattleManager:calculateDamage(attacker, target)
-    return self.combat:calculateDamage(attacker, target)
+    return self.combatManager:calculateDamage(attacker, target)
 end
 
 function BattleManager:checkEndOfTurn()
-    return self.turn:checkEndOfTurn()
+    return self.turnManager:checkEndOfTurn()
 end
 
 function BattleManager:endTurn()
-    return self.turn:endTurn()
+    return self.turnManager:endTurn()
 end
 
 

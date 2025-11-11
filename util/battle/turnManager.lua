@@ -54,13 +54,10 @@ function TurnManager:endTurn()
     end
 
     -- === End-of-turn effects ===
-    for _, char in ipairs(currentPlayer.team) do
-        for effectName, effData in pairs(char.effects or {}) do
-            local impl = battle.effectImplementations and battle.effectImplementations[effectName]
-            if impl and impl.onTurnEnd then
-                impl.onTurnEnd(char)
-            end
-        end
+    if battle.effectManager then
+        battle.effectManager:updateAllEffects()
+    else
+        print("[Warning] No EffectManager found in battle instance!")
     end
 
     -- Reset turn data

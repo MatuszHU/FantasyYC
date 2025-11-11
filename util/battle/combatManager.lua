@@ -20,7 +20,7 @@ function CombatManager:attack(attacker, target)
     print(attacker.name .. " attacks " .. target.name .. "!")
 
     local dmg = self:calculateDamage(attacker, target)
-    if self:isCrit(attacker)
+    if self:isCrit(attacker) then
         target.hp = math.max(target.hp - (dmg * 2), 0)
     else
         target.hp = math.max(target.hp - dmg, 0)
@@ -38,7 +38,7 @@ end
 
 function CombatManager:isCrit(attacker)
     local critrate = attacker.luck / 100
-    if math.random() < critrate
+    if math.random() < critrate then
         return true
     else
         return false
@@ -49,12 +49,21 @@ end
 -- Calculates damage output
 --------------------------------------------------------
 function CombatManager:calculateDamage(attacker, target)
+    local effectManager = self.battle.effectManager
     local base = attacker.atk or 0
     local defense = target.def or 0
     local bonus = self.battle.extradmg or 0
 
-    local dmg = math.max((base - defense) + bonus, 1)
-    return dmg
+    local dmg = math.max((base - defense) + bonus, 0)
+    dmg = effectManager:modifyOutgoingDamage(dmg, attacker)
+
+    -- Apply incoming modifiers (like Shield)
+    dmg = effectManager:modifyIncomingDamage(dmg, target)
+
+    -- Final interception (like Last Stand)
+    dmg = effectManager:onDamageTaken(target, dmg)
+
+    return math.max(dmg, 0)
 end
 
 --------------------------------------------------------
