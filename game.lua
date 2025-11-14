@@ -114,8 +114,9 @@ function Game:keypressed(key)
     local battle = self.battleManager
 
     -- Restart battle
-    if battle.isBattleOver and key == "return" then
+    if battle.isBattleOver and key == "r" then
         battle:endBattle()
+        battle:startBattle()
     end
 
     -- Enter attack phase
