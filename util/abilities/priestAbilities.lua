@@ -22,7 +22,6 @@ return {
         passive = false,
         effect = function(user, target)
             effectImplementations.curseTurns.apply(user, 3)
-            target.effects.curseTurns = 3
         end
     },
     ability4 = {
