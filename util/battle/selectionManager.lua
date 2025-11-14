@@ -92,6 +92,7 @@ function SelectionManager:enterAttackPhase()
 
     print(self.selectedCharacter.name .. " is preparing to attack.")
     battle.phase = Phase.ATTACK
+    self.battle.characterManager:clearHighlight()
 end
 
 --------------------------------------------------------
