@@ -4,6 +4,7 @@ local CharacterManager = require "util.characterManager"
 local BattleManager = require "util.battleManager"
 local Phase = require "../enums.battlePhases"
 local effectImplementations = require "util.effectImplementations"
+local GameInstructionsView  = require "GameInstructionsView"
 
 local Game = {}
 Game.__index = Game
@@ -12,6 +13,8 @@ function Game:new()
     local self = setmetatable({}, Game)
 
     self:init()
+    self.showHelp = false                             
+    self.helpView = GameInstructionsView()   
 
     -- Create some example teams
     local playerTeam = self.battleManager.playerRoster:getTeam()
@@ -60,7 +63,11 @@ function Game:draw()
             love.graphics.setColor(1, 1, 1)
             love.graphics.printf("Battle Over!", 0, h / 2 - 40, w, "center")
             love.graphics.printf(winner .. " Wins!", 0, h / 2, w, "center")
-            love.graphics.printf("Press Enter to restart", 0, h / 2 + 40, w, "center")
+            love.graphics.printf("Press 'k' to restart", 0, h / 2 + 40, w, "center")
+    end
+
+    if self.showHelp then
+        self.helpView:draw()
     end
 end
 
@@ -121,6 +128,15 @@ function Game:keypressed(key)
     end
     if (self.battleManager.phase == Phase.USE_ABILITY or self.battleManager.phase == Phase.MOVE) and (key == "1" or key == "2" or key == "3" or key == "4" or key == "5") then
         self.battleManager:useAbility(key, self.battleManager.selectedCharacter)
+        return
+    end
+
+    if key == "u" then
+        self.battleManager:divineIntervention()
+    end
+
+    if key == "h" then
+        self.showHelp = not self.showHelp
         return
     end
 

@@ -28,6 +28,7 @@ function BattleManager:new(characterManager)
     self.playerWinCount = 0
     self.extradmg = 0
     self.abilityCooldowns = {}
+    self.isDivineInterventionUsed = false
     return self
 end
 
@@ -44,6 +45,7 @@ function BattleManager:startBattle()
     self.isBattleOver = false
     self.winner = nil
     self.abilityCooldowns = {}
+    self.isDivineInterventionUsed = false
     
     for _, player in ipairs(self.players) do
         for _, char in ipairs(player.team) do
@@ -410,6 +412,66 @@ function BattleManager:applyPassiveAbilities(char)
     end
 
     char.passivesApplied = true
+end
+
+function BattleManager:divineIntervention()
+    if self.isDivineInterventionUsed == true then
+        return
+    end
+
+    self.isDivineInterventionUsed = true
+
+    local diceroll = math.random(100)
+    if diceroll > 50 and diceroll <= 60 then
+        for _, char in ipairs(self.players[1].team) do
+            char.stats["hp"] = char.stats["hp"] / 2
+            if char.stats["hp"] <= 0 then
+                char.isDefeated = true
+            end
+        end
+    elseif diceroll > 60 and diceroll <= 80 then
+        for _, char in ipairs(self.players[2].team) do
+            char.stats["hp"] = char.stats["hp"] / 2
+            if char.stats["hp"] <= 0 then
+                char.isDefeated = true
+            end
+        end
+    elseif diceroll > 80 and diceroll <= 100 then
+        for _, char in ipairs(self.players[2].team) do
+            char.stats["hp"] = 0
+            char.isDefeated = true
+        end
+    else
+        return 
+    end
+
+     -- Check victory
+    local playerAlive = false
+    for _, c in ipairs(self.players[1].team) do
+        if not c.isDefeated then
+            playerAlive = true
+            break
+        end
+    end
+
+    local aiAlive = false
+    for _, c in ipairs(self.players[2].team) do
+        if not c.isDefeated then
+            aiAlive = true
+            break
+        end
+    end
+
+    if not playerAlive or not aiAlive then
+        local winner = playerAlive and self.players[1].name or self.players[2].name
+        print("Battle over! " .. winner .. " wins!")
+
+        self.winner = winner
+        self.isBattleOver = true
+        self.phase = Phase.IDLE
+        return
+    end
+
 end
 
 function BattleManager:useAbility(key, char)

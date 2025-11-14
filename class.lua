@@ -26,7 +26,7 @@ return {
             movement = 4,
             attackRange = 1
         },
-        abilities = cabilities
+        abilities = kabilities
     },
     wizard = {
         name = "wizard",
@@ -36,7 +36,7 @@ return {
             accuracy = 4,
             attackRange = 5
         },
-        abilities = wabilities
+        abilities = kabilities
     },
     priest = {
         name = "priest",
@@ -50,7 +50,7 @@ return {
             movement = 1,
             attackRange = 3
         },
-        abilities = pabilities
+        abilities = kabilities
     },
     thief = {
         name = "thief",
