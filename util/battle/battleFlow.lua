@@ -139,4 +139,9 @@ function BattleFlow:checkVictory()
     return false
 end
 
+function BattleFlow:changePhase(newPhase)
+    local battle = self.battle
+    battle.phase = newPhase
+end
+
 return BattleFlow

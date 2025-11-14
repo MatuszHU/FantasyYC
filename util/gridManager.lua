@@ -75,6 +75,12 @@ function GridManager:draw()
     -- Reset color
     love.graphics.setColor(1, 1, 1)
 
+    -- Draw reachable movement cells
+    if self.reachableCells then
+        self:highlightCells(self.reachableCells, 0, 1, 0, 0.3)
+    end
+
+    -- Draw selected cell (red)
     if self.selectedCell then
         self:highlightCells({self.selectedCell}, 1, 0, 0, 0.4)
     end

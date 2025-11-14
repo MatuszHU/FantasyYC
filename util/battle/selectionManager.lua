@@ -24,12 +24,13 @@ function SelectionManager:selectCharacter(char)
     end
 
     self.selectedCharacter = char
+    battle.selectedCharacter = char
     self.selectedTarget = nil
 
     print("Selected character: " .. char.name)
     battle.phase = Phase.MOVE -- or Phase.IDLE, depending on your flow
 
-    -- Optionally, highlight movement or ability range here
+    self.battle.characterManager:highlightReachable(char)
 end
 
 --------------------------------------------------------

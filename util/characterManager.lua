@@ -77,6 +77,7 @@ end
 
 function CharacterManager:highlightReachable(char)
     self.reachableCells = self:getReachableCells(char)
+    self.gridManager.reachableCells = self.reachableCells
 end
 -- TODO: possible remove
 function CharacterManager:levelUpCharacters()
@@ -90,6 +91,7 @@ end
 
 function CharacterManager:clearHighlight()
     self.reachableCells = nil
+    self.gridManager.reachableCells = nil
 end
 
 
