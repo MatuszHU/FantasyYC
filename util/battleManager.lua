@@ -1,0 +1,615 @@
+-- util/battleManager.lua
+local BattleManager = {}
+BattleManager.__index = BattleManager
+
+local Phase = require "../enums.battlePhases"
+local PlayerRoster = require "util.playerRoster"
+local effectImplementations = require "util.effectImplementations"
+
+
+function BattleManager:new(characterManager)
+    local self = setmetatable({}, BattleManager)
+    self.characterManager = characterManager
+    self.phase = Phase.IDLE
+
+    self.playerRoster = PlayerRoster:new(self.characterManager)
+
+
+    self.players = {
+        { id = 1, name = "Player", team  = self.playerRoster:getTeam() },
+        { id = 2, name = "AI", team = {} }
+    }
+
+    self.currentPlayerIndex = 1
+    self.actedCharacters = {}
+    self.selectedCharacter = nil
+    self.isBattleOver = false
+    self.winner = nil
+    self.playerWinCount = 0
+    self.extradmg = 0
+    self.abilityCooldowns = {}
+    self.isDivineInterventionUsed = false
+    return self
+end
+
+function BattleManager:assignTeams(playerTeam, aiTeam)
+    self.players[1].team = playerTeam or {}
+    self.players[2].team = aiTeam or {}
+end
+
+function BattleManager:startBattle()
+    self.phase = Phase.SELECT
+    self.currentPlayerIndex = 1
+    self.actedCharacters = {}
+    self.selectedCharacter = nil
+    self.isBattleOver = false
+    self.winner = nil
+    self.abilityCooldowns = {}
+    self.isDivineInterventionUsed = false
+    
+    for _, player in ipairs(self.players) do
+        for _, char in ipairs(player.team) do
+            char.effects = {}
+            
+            char:setStats()
+            
+            char.passivesApplied = nil
+            
+            self:applyPassiveAbilities(char)
+        end
+    end
+    
+    print("Battle started! " .. self:getCurrentPlayer().name .. " goes first.")
+end
+
+
+function BattleManager:levelUpCharacters()
+    for _, char in ipairs(self.playerRoster:getTeam()) do
+        char:levelUp()
+    end
+end
+
+function BattleManager:endBattle()
+    print("Ending battle...")
+    local playerTeam = self.playerRoster:getTeam()
+
+    if self.winner == "Player" then
+        self.playerWinCount = self.playerWinCount + 1
+    end
+
+    if #playerTeam < 6 then
+        local raceList = {"dwarf", "elf", "human"}
+        local race = raceList[math.random(1, #raceList)]
+        local classList = {"knight", "cavalry", "wizard", "priest", "thief"}
+        local class = classList[math.random(1, #classList)]
+        local newAllyName = self.playerRoster.nameManager:getRandomName(race, "male")
+        local spawnCol = 3 + #playerTeam  -- example offset spawn
+        local spawnRow = 8 + (#playerTeam % 2)
+
+        local newAlly = self.characterManager:addCharacter(
+            newAllyName,
+            race,
+            class,
+            math.random(1, 6),
+            spawnCol,
+            spawnRow
+        )
+
+        table.insert(playerTeam, newAlly)
+        print("Added new ally:", newAlly.name)
+    end
+
+
+    -- === Restore and reuse player roster ===
+    for _, char in ipairs(self.playerRoster:getTeam()) do
+        char.effects = {}
+    end
+
+    self.playerRoster:resetAfterBattle()
+
+    local newList = {}
+    for _, c in ipairs(self.characterManager.characters) do
+        local isRosterChar = false
+        for _, pc in ipairs(self.playerRoster:getTeam()) do
+            if c == pc then
+                isRosterChar = true
+                table.insert(newList, c)
+                break
+            end
+        end
+        
+        if not isRosterChar then
+            self.playerRoster.nameManager:removeName(c.name)
+        end
+    end
+    self.characterManager.characters = newList
+
+    local aiTeam = {}
+    local aiTeamSize = math.random(#playerTeam, (#playerTeam + 2))  -- variable difficulty, can adjust later
+    for i = 1, aiTeamSize do
+        local name = self.playerRoster.nameManager:getRandomName("orc", "male")
+        local raceList = {"orc", "goblin"}
+        local race = raceList[math.random(1, #raceList)]
+        local classList = {"knight", "cavalry", "wizard", "priest", "thief"}
+        local class = classList[math.random(1, #classList)]
+        local x = 25 + love.math.random(0, 3)
+        local y = 5 + love.math.random(0, 10)
+        local aiChar = self.characterManager:addCharacter(name, race, class, math.random(1, 6), x, y)
+        table.insert(aiTeam, aiChar)
+    end
+
+    self.characterManager:clearHighlight()
+    self:assignTeams(self.playerRoster:getTeam(), aiTeam)
+
+    self:startBattle()
+    print("A new battle begins! Your roster returns to fight again!")
+end
+
+function BattleManager:getCurrentPlayer()
+    return self.players[self.currentPlayerIndex]
+end
+
+function BattleManager:isCharacterOnCurrentTeam(char)
+    for _, c in ipairs(self:getCurrentPlayer().team) do
+        if c == char then return true end
+    end
+    return false
+end
+
+function BattleManager:selectCharacter(char)
+    if char.isDefeated then
+        print("Cannot select defeated character!")
+        return false
+    end
+    if not self:isCharacterOnCurrentTeam(char) then
+        print("Cannot control enemy units!")
+        return false
+    end
+    if self.actedCharacters[char] then
+        print(char.name .. " has already acted this turn.")
+        return false
+    end
+    self.selectedCharacter = char
+    self.phase = Phase.MOVE
+    print("Selected " .. char.name .. " to act.")
+    if self.characterManager then
+        self.characterManager:highlightReachable(char)
+    end
+    return true
+end
+
+function BattleManager:moveCharacter(gridX, gridY)
+    if self.phase ~= Phase.MOVE or not self.selectedCharacter then return end
+
+    local char = self.selectedCharacter
+    local reachable = self.characterManager:getReachableCells(char)
+
+    for _, cell in ipairs(reachable) do
+        if cell.x == gridX and cell.y == gridY then
+            char:moveTo(gridX, gridY)
+            if self.characterManager then
+                self.characterManager:clearHighlight()
+            end
+            self.phase = Phase.ATTACK
+            print(char.name .. " moved to (" .. gridX .. "," .. gridY .. ")")
+            return
+        end
+    end
+
+    print("Cannot move there!")
+end
+
+function BattleManager:attack(target)
+    if self.phase ~= Phase.ATTACK or not self.selectedCharacter then return end
+    if not target then
+        print("No target selected.")
+        return
+    end
+    if self:isCharacterOnCurrentTeam(target) then
+        print("Cannot attack allies!")
+        return
+    end
+
+    local attacker = self.selectedCharacter
+
+    local dist = math.abs(attacker.gridX - target.gridX) + math.abs(attacker.gridY - target.gridY)
+    local range = attacker.stats.attackRange or 1
+    if dist > range then
+        print(string.format("%s cannot reach %s (distance %d, range %d)", attacker.name, target.name, dist, range))
+        return
+    end
+
+    -- Attack execution
+    local damage = self:calculateDamage(attacker, target)
+    target.stats.hp = math.max(0, target.stats.hp - damage)
+    print(attacker.name .. " attacks " .. target.name .. " for " .. damage .. " damage! HP left: " .. target.stats.hp)
+
+    self.extradmg = 0
+    self.actedCharacters[attacker] = true
+    self.selectedCharacter = nil
+    self.phase = Phase.SELECT
+
+    if target.stats.hp <= 0 then
+        print(target.name .. " has been defeated.")
+        target.isDefeated = true
+    end
+
+    -- Check victory
+    local playerAlive = false
+    for _, c in ipairs(self.players[1].team) do
+        if not c.isDefeated then
+            playerAlive = true
+            break
+        end
+    end
+
+    local aiAlive = false
+    for _, c in ipairs(self.players[2].team) do
+        if not c.isDefeated then
+            aiAlive = true
+            break
+        end
+    end
+
+    if not playerAlive or not aiAlive then
+        local winner = playerAlive and self.players[1].name or self.players[2].name
+        print("Battle over! " .. winner .. " wins!")
+
+        self.winner = winner
+        self.isBattleOver = true
+        self.phase = Phase.IDLE
+        return
+    end
+
+    if self.characterManager then
+        self.characterManager:clearHighlight()
+    end
+
+    if self:checkEndOfTurn() then
+        self:endTurn()
+    end
+end
+
+function BattleManager:enterAttackPhase()
+    if not self.selectedCharacter then
+        print("No character selected to attack.")
+        return
+    end
+
+    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT and self.phase ~= Phase.USE_ABILITY then
+        print("Cannot enter attack phase right now.")
+        return
+    end
+
+    self.phase = Phase.ATTACK
+    print(self.selectedCharacter.name .. " is preparing to attack!")
+
+    -- optional: highlight enemies in range
+    local char = self.selectedCharacter
+    local attackRange = char.stats.attackRange or 1
+    local enemies = {}
+
+    local currentPlayer = self:getCurrentPlayer()
+    local enemyPlayer = (self.currentPlayerIndex == 1) and self.players[2] or self.players[1]
+    for _, enemy in ipairs(enemyPlayer.team) do
+        if not enemy.isDefeated then
+            local dx = math.abs(enemy.gridX - char.gridX)
+            local dy = math.abs(enemy.gridY - char.gridY)
+            if (dx + dy) <= attackRange then
+                table.insert(enemies, { x = enemy.gridX, y = enemy.gridY })
+            end
+        end
+    end
+
+    if #enemies > 0 then
+        self.characterManager.reachableCells = nil
+        self.characterManager.gridManager:highlightCells(enemies, 1, 0, 0, 0.4)
+    else
+        print("No enemies in attack range.")
+        self.phase = Phase.MOVE
+    end
+end
+
+function BattleManager:enterUseAbilityPhase()
+    if not self.selectedCharacter then
+        print("No character selected to use ability.")
+        return
+    end
+
+    if self.phase ~= Phase.MOVE and self.phase ~= Phase.SELECT then
+        print("Cannot enter use ability phase right now.")
+        return
+    end
+
+    self.phase = Phase.USE_ABILITY
+    print(self.selectedCharacter.name .. " is preparing to use ability!")
+
+    -- optional: highlight enemies in range
+    local char = self.selectedCharacter
+    local attackRange = char.stats.attackRange or 1
+    local enemies = {}
+
+    local currentPlayer = self:getCurrentPlayer()
+    local enemyPlayer = (self.currentPlayerIndex == 1) and self.players[2] or self.players[1]
+    for _, enemy in ipairs(enemyPlayer.team) do
+        if not enemy.isDefeated then
+            local dx = math.abs(enemy.gridX - char.gridX)
+            local dy = math.abs(enemy.gridY - char.gridY)
+            if (dx + dy) <= attackRange then
+                table.insert(enemies, { x = enemy.gridX, y = enemy.gridY })
+            end
+        end
+    end
+
+    if #enemies > 0 then
+        self.characterManager.reachableCells = nil
+        self.characterManager.gridManager:highlightCells(enemies, 1, 0, 0, 0.4)
+    else
+        print("No enemies in attack range.")
+        self.phase = Phase.MOVE
+    end
+end
+
+function BattleManager:passTurn()
+    if self.isBattleOver then return end
+
+    print("Turn passed by " .. self.players[self.currentPlayerIndex].name)
+
+    -- clear any selection and highlights
+    if self.characterManager then
+        self.selectedCharacter = nil
+        if self.characterManager.gridManager and self.characterManager.gridManager.clearHighlight then
+            self.characterManager.gridManager:clearHighlight()
+        end
+    end
+
+    self:endTurn()
+end
+
+function BattleManager:passCharacterTurn()
+    if self.isBattleOver then return end
+
+    local activePlayer = self.players[self.currentPlayerIndex]
+    local selected = self.selectedCharacter
+
+    if not selected then
+        print("[DEBUG] No character selected to pass turn for.")
+        return
+    end
+
+    -- mark character as acted
+    self.actedCharacters[selected] = true
+
+    print(string.format("[DEBUG] %s passed their turn.", selected.name or "Unnamed"))
+
+    -- deselect and reset phase
+    self.selectedCharacter = nil
+    self.phase = Phase.SELECT
+
+    -- check if all characters on this team have acted
+    local allActed = self:checkEndOfTurn()
+
+    if allActed then
+        print("[DEBUG] All characters have acted. Passing turn to next player.")
+        self:passTurn()  -- move to next player
+    end
+
+    if self.characterManager then
+        self.characterManager:clearHighlight()
+    end
+end
+
+function BattleManager:applyPassiveAbilities(char)
+    if not char.abilities then return end
+
+     if char.passivesApplied then return end
+    
+    for abilityKey, ability in pairs(char.abilities) do
+        if ability.passive then
+            ability.effect(char)
+            print(char.name .. " passive ability activated: " .. ability.name)
+        end
+    end
+
+    char.passivesApplied = true
+end
+
+function BattleManager:divineIntervention()
+    if self.isDivineInterventionUsed == true then
+        return
+    end
+
+    self.isDivineInterventionUsed = true
+
+    local diceroll = math.random(100)
+    if diceroll > 50 and diceroll <= 60 then
+        for _, char in ipairs(self.players[1].team) do
+            char.stats["hp"] = char.stats["hp"] / 2
+            if char.stats["hp"] <= 0 then
+                char.isDefeated = true
+            end
+        end
+    elseif diceroll > 60 and diceroll <= 80 then
+        for _, char in ipairs(self.players[2].team) do
+            char.stats["hp"] = char.stats["hp"] / 2
+            if char.stats["hp"] <= 0 then
+                char.isDefeated = true
+            end
+        end
+    elseif diceroll > 80 and diceroll <= 100 then
+        for _, char in ipairs(self.players[2].team) do
+            char.stats["hp"] = 0
+            char.isDefeated = true
+        end
+    else
+        return 
+    end
+
+     -- Check victory
+    local playerAlive = false
+    for _, c in ipairs(self.players[1].team) do
+        if not c.isDefeated then
+            playerAlive = true
+            break
+        end
+    end
+
+    local aiAlive = false
+    for _, c in ipairs(self.players[2].team) do
+        if not c.isDefeated then
+            aiAlive = true
+            break
+        end
+    end
+
+    if not playerAlive or not aiAlive then
+        local winner = playerAlive and self.players[1].name or self.players[2].name
+        print("Battle over! " .. winner .. " wins!")
+
+        self.winner = winner
+        self.isBattleOver = true
+        self.phase = Phase.IDLE
+        return
+    end
+
+end
+
+function BattleManager:useAbility(key, char)
+    if not char then
+        print("No character selected to use ability.")
+        return
+    end
+    
+    local abilityIndex = tonumber(key)
+    if not abilityIndex or abilityIndex < 1 or abilityIndex > 5 then
+        print("Invalid ability key.")
+        return
+    end
+    
+    local abilityKey = "ability" .. abilityIndex
+    local ability = char.abilities[abilityKey]
+    
+    if not ability then
+        print(char.name .. " does not have ability " .. abilityIndex)
+        return
+    end
+    
+    if ability.passive then
+        print(ability.name .. " is a passive ability and cannot be activated.")
+        return
+    end
+    
+    if not self.abilityCooldowns[char] then
+        self.abilityCooldowns[char] = {}
+    end
+    
+    local currentCooldown = self.abilityCooldowns[char][abilityKey] or 0
+    if currentCooldown > 0 then
+        print(ability.name .. " is on cooldown for " .. currentCooldown .. " more turns.")
+        return
+    end
+    
+    local result = ability.effect(char)
+    
+    self.abilityCooldowns[char][abilityKey] = ability.cooldown
+    print(char.name .. " uses " .. ability.name .. "!")
+    print("  [Cooldown: " .. ability.cooldown .. " turns]")
+    
+    if type(result) == "number" then
+        self.extradmg = result
+        print("  (+" .. result .. " extra damage)")
+    else
+        self.extradmg = 0
+    end
+    
+    self:enterAttackPhase()
+end
+
+function BattleManager:calculateDamage(attacker, target)
+    local atk = 0
+    local def = 0
+    if attacker.class == "wizard" or attacker.class == "priest" then
+        atk = (attacker.stats and attacker.stats.magic) or 0
+        def = (target.stats and target.stats.resistance) or 0
+    else
+        atk = (attacker.stats and attacker.stats.attack) or 0
+        def = (target.stats and target.stats.defense) or 0
+    end
+    local baseDamage = math.max(0, atk - def)
+
+    if effectImplementations.berserkTurns and effectImplementations.berserkTurns.modifyOutgoingDamage then
+        baseDamage = effectImplementations.berserkTurns.modifyOutgoingDamage(baseDamage, attacker)
+    end
+
+    if effectImplementations.shieldTurns and effectImplementations.shieldTurns.modifyIncomingDamage then
+        baseDamage = effectImplementations.shieldTurns.modifyIncomingDamage(baseDamage, target)
+    end
+
+    if effectImplementations.hasLastStand and effectImplementations.hasLastStand.onDamageTaken then
+        baseDamage = effectImplementations.hasLastStand.onDamageTaken(target, baseDamage)
+    end
+
+    return baseDamage + self.extradmg
+end
+
+function BattleManager:checkEndOfTurn()
+    local allActed = true
+    for _, char in ipairs(self:getCurrentPlayer().team) do
+        if (not self.actedCharacters[char]) and (not char.isDefeated) then
+            allActed = false
+            break
+        end
+    end
+    return allActed
+end
+
+function BattleManager:endTurn()
+    local currentPlayer = self:getCurrentPlayer()
+    print(currentPlayer.name .. "'s turn ended.")
+    self.phase = Phase.END_TURN
+
+    for _, char in ipairs(currentPlayer.team) do
+        if self.abilityCooldowns[char] then
+            for abilityKey, cooldown in pairs(self.abilityCooldowns[char]) do
+                if cooldown > 0 then
+                    self.abilityCooldowns[char][abilityKey] = cooldown - 1
+                    if self.abilityCooldowns[char][abilityKey] == 0 then
+                        local ability = char.abilities[abilityKey]
+                        if ability then
+                            print("  " .. char.name .. "'s " .. ability.name .. " is ready!")
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    for _, char in ipairs(currentPlayer.team) do
+        for effectName, effData in pairs(char.effects or {}) do
+            local impl = effectImplementations[effectName]
+            if impl and impl.onTurnEnd then
+                impl.onTurnEnd(char)
+            end
+        end
+    end
+
+    self.actedCharacters = {}
+    self.currentPlayerIndex = (self.currentPlayerIndex % #self.players) + 1
+    self.phase = Phase.SELECT
+
+    if self.characterManager then
+        self.characterManager:clearHighlight()
+    end
+    
+    print("Now it's " .. self:getCurrentPlayer().name .. "'s turn!")
+end
+
+
+function BattleManager:update(dt)
+    -- Future: AI logic
+end
+
+function BattleManager:draw()
+end
+
+return BattleManager

@@ -5,6 +5,8 @@ possibleEffects = {
     battleCryTurns = nil,
     hasLastStand = false,
     shieldTurns = nil,
+    mindFocusTurns = nil,
+    curseTurns = nil,
 }
 
 return possibleEffects

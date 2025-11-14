@@ -43,7 +43,6 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
                 self.stats[k] = self.baseStats[k] + self.bonusStats[k]
             end
             self.stats.max_hp = self.stats.hp
-            self.stats.attackRange = 1
         end,
         levelUp = function(self)
             self.level = self.level + 1
