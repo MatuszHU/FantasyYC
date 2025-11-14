@@ -85,12 +85,18 @@ end
 
 
 function CombatManager:isCrit(attacker)
-    local critrate = attacker.stats.luck / 100
-    if math.random() < critrate then
-        return true
-    else
-        return false
+    local critrate = (attacker.stats.luck or 0) / 100
+    local crit = (math.random() < critrate)
+
+    if attacker.effects.nextAttackCrit then
+        crit = effectImplementations.nextAttackCrit.modifyCritChance(attacker, crit)
     end
+
+    if attacker.effects.russianRouletteStacks then
+        crit = effectImplementations.russianRouletteStacks.modifyCritChance(attacker, crit)
+    end
+
+    return crit
 end
 
 --------------------------------------------------------

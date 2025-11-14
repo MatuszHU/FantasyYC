@@ -264,4 +264,53 @@ effectImplementations.curseTurns = {
     end
 }
 
+effectImplementations.nextAttackCrit = {
+    modifyCritChance = function(character, crit)
+        if character.effects.nextAttackCrit then
+            character.effects.nextAttackCrit = nil
+            print(character.name .. " lands a GUARANTEED critical strike!")
+            return true
+        end
+        return crit
+    end
+}
+
+effectImplementations.deadlyPrecisionTurns = {
+    apply = function(character, duration)
+        duration = duration or 3
+        character.effects.deadlyPrecisionTurns = duration
+
+        character.stats.luck = (character.stats.luck or 0) + 10
+        print(character.name .. " gains +10 LUCK for " .. duration .. " turns!")
+    end,
+
+    onTurnEnd = function(character)
+        local eff = character.effects.deadlyPrecisionTurns
+        if eff then
+            character.effects.deadlyPrecisionTurns = eff - 1
+            if character.effects.deadlyPrecisionTurns <= 0 then
+                character.stats.luck = character.stats.luck - 10
+                character.effects.deadlyPrecisionTurns = nil
+                print(character.name .. "'s Deadly Precision fades.")
+            end
+        end
+    end
+}
+
+effectImplementations.russianRouletteStacks = {
+    modifyCritChance = function(character, crit)
+        local stacks = character.effects.russianRouletteStacks or 0
+        if stacks > 0 then
+            local bonus = stacks * 0.10
+            local totalCrit = crit or false
+
+            if math.random() < bonus then
+                print(character.name .. " hits a Russian Roulette CRIT from stacks!")
+                return true
+            end
+        end
+        return crit
+    end
+}
+
 return effectImplementations
