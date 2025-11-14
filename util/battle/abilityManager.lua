@@ -93,4 +93,43 @@ function AbilityManager:useAbility(key, char)
     end
 end
 
+function AbilityManager:divineIntervention()
+    if self.battle:getCurrentPlayer().isDivineInterventionUsed == true then
+        return
+    end
+    self.battle:getCurrentPlayer().isDivineInterventionUsed = true
+    print("I worked!")
+    local diceroll = math.random(100)
+    print(diceroll)
+    local enemyPlayerIndex = self.battle:getCurrentPlayer().id
+    if  enemyPlayerIndex == 1 then
+        enemyPlayerIndex = 2
+    else
+        enemyPlayerIndex = 1
+    end
+    if diceroll > 50 and diceroll <= 60 then
+        for _, char in ipairs(self.battle:getCurrentPlayer().team) do
+            char.stats["hp"] = char.stats["hp"] / 2
+            if char.stats["hp"] <= 0 then
+                char.isDefeated = true
+            end
+        end
+    elseif diceroll > 60 and diceroll <= 80 then
+        for _, char in ipairs(self.battle.players[enemyPlayerIndex].team) do
+            char.stats["hp"] = char.stats["hp"] / 2
+            if char.stats["hp"] <= 0 then
+                char.isDefeated = true
+            end
+        end
+    elseif diceroll > 80 and diceroll <= 100 then
+        for _, char in ipairs(self.battle.players[enemyPlayerIndex].team) do
+            char.stats["hp"] = 0
+            char.isDefeated = true
+        end
+    else
+        return
+    end
+    self.battle.battleFlow:checkVictory()
+end
+
 return AbilityManager

@@ -19,8 +19,8 @@ function BattleManager:new(characterManager)
     self.playerRoster = PlayerRoster:new(self.characterManager)
 
     self.players = {
-        { id = 1, name = "Player", team  = self.playerRoster:getTeam() },
-        { id = 2, name = "AI", team = {} }
+        { id = 1, name = "Player", team  = self.playerRoster:getTeam(), isDivineInterventionUsed = false},
+        { id = 2, name = "AI", team = {}, isDivineInterventionUsed = false }
     }
 
     self.currentPlayerIndex = 1
@@ -142,6 +142,10 @@ end
 
 function BattleManager:useAbility(key, char)
     return self.abilityManager:useAbility(key, char)
+end
+
+function BattleManager:divineIntervention()
+    return self.abilityManager:divineIntervention()
 end
 
 function BattleManager:calculateDamage(attacker, target)

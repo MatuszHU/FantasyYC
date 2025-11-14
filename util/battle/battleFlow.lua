@@ -9,6 +9,12 @@ function BattleFlow:new(battle)
     return self
 end
 
+function BattleFlow:resetDivineIntervention()
+    local battle = self.battle
+    battle.players[1].isDivineInterventionUsed = false
+    battle.players[2].isDivineInterventionUsed = false
+end
+
 -- 🔹 Assign teams (usually once per battle)
 function BattleFlow:assignTeams(playerTeam, aiTeam)
     local battle = self.battle
@@ -27,6 +33,7 @@ function BattleFlow:startBattle()
     battle.isBattleOver = false
     battle.winner = nil
     battle.abilityCooldowns = {}
+    self:resetDivineIntervention()
 
     for _, player in ipairs(battle.players) do
         for _, char in ipairs(player.team) do

@@ -148,7 +148,7 @@ function Game:keypressed(key)
     end
 
     if key == "i" then
-        self.battleManager:divineIntervention()
+        battle:divineIntervention()
     end
 
     if key == "h" then
