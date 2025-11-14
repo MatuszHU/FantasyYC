@@ -80,7 +80,7 @@ function CombatManager:calculateDamage(attacker, target)
     -- Final interception (like Last Stand)
     dmg = effectManager:onDamageTaken(target, dmg)
 
-    return math.max(dmg, 0)
+    return math.floor(math.max(dmg, 0))
 end
 
 --------------------------------------------------------

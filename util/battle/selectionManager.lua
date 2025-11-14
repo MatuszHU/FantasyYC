@@ -53,7 +53,10 @@ function SelectionManager:deselect()
         print("Deselected " .. self.selectedCharacter.name)
     end
     self.selectedCharacter = nil
+    self.battle.selectedCharacter = nil
     self.selectedTarget = nil
+    self.battle.characterManager:clearHighlight()
+    self.battle.phase = Phase.SELECT
 end
 
 --------------------------------------------------------
@@ -107,6 +110,7 @@ function SelectionManager:enterAbilityPhase()
 
     print(self.selectedCharacter.name .. " is ready to use an ability.")
     battle.phase = Phase.USE_ABILITY
+    self.battle.characterManager:clearHighlight()
 end
 
 return SelectionManager

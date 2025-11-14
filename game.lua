@@ -116,7 +116,7 @@ function Game:keypressed(key)
     -- Restart battle
     if battle.isBattleOver and key == "r" then
         battle:endBattle()
-        battle:startBattle()
+        batle:startBattle()
     end
 
     -- Enter attack phase
@@ -127,6 +127,10 @@ function Game:keypressed(key)
     -- Enter ability phase
     if key == "u" then
         battle:enterUseAbilityPhase()
+    end
+
+    if key == "d" then
+        battle:deselect()
     end
 
     -- Use ability (1–5)

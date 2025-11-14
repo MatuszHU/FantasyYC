@@ -98,8 +98,8 @@ function BattleManager:selectTarget(cell)
     return self.selectionManager:selectTarget(cell)
 end
 
-function BattleManager:deselect(cell)
-    return self.selectionManager:deselect(cell)
+function BattleManager:deselect()
+    return self.selectionManager:deselect()
 end
 
 function BattleManager:moveCharacter(gridX, gridY)
