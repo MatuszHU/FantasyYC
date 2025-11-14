@@ -32,7 +32,7 @@ return {
         cooldown = 3,
         passive = false,
         effect = function(user)
-            user.effects.mindFocusTurns = 3
+            effectImplementations.mindFocusTurns.apply(user, 3)
         end
     },
     ability4 = {

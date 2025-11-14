@@ -12,7 +12,7 @@ return {
         cooldown = 3,
         passive = false,
         effect = function(user)
-            user.effects.ironWallTurns = 3
+            effectImplementations.ironWallTurns.apply(user, 3)
         end
     },
     ability3 = {
