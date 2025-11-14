@@ -116,7 +116,7 @@ function Game:keypressed(key)
     -- Restart battle
     if battle.isBattleOver and key == "r" then
         battle:endBattle()
-        batle:startBattle()
+        battle:startBattle()
     end
 
     -- Enter attack phase

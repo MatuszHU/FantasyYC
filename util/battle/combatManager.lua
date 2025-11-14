@@ -67,8 +67,14 @@ end
 --------------------------------------------------------
 function CombatManager:calculateDamage(attacker, target)
     local effectManager = self.battle.effectManager
-    local base = attacker.stats.attack or 0
-    local defense = target.stats.defense or 0
+    local base, defense
+    if attacker.class == "wizard" or attacker.class == "priest" then
+        base = attacker.stats.magic or 0
+        defense = target.stats.resistance or 0
+    else
+        base = attacker.stats.attack or 0
+        defense = target.stats.defense or 0
+    end
     local bonus = self.battle.extradmg or 0
 
     local dmg = math.max((base - defense) + bonus, 0)
