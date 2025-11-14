@@ -1,9 +1,13 @@
 -- Gyakorlatilag import
 local love = require "love"
+local nameManager = require("util.nameManager")()
 local Button = require "Button"
 local settingsView = require "SettingsView"
 local font = require "util/fonts"
 local character = require "character"
+local CharacterManager = require "util.characterManager"
+local raceTable = require("race")
+local classTable = require("class")
 local GameManager = require "game" -- refaktorálni kell majd a maint, hogy amit lehet a game.lua-ból használjon.
 --Minden globálisan érvényes érték itt legyen kezelve
 local game = {
@@ -15,8 +19,33 @@ local game = {
     }
 }
 local settings = settingsView()
-
+--gridManager
 local gameInstance = nil
+
+local characterManager;
+
+function generateRecruitCharacters(manager, n)
+    local races = {"orc", "elf", "goblin", "human", "dwarf"}
+    local genders = {"male", "female"}
+    local classes = {"knight", "cavalry", "wizard", "priest", "thief"} 
+    --ősember megoldás tudom
+
+    for i = 1, n do
+        local race = races[math.random(#races)]
+        local gender = genders[math.random(#genders)]
+        local class = classes[math.random(#classes)]
+        local spriteIndex = math.random(1, 6)
+        local gridX, gridY = 0, 0
+
+        local name = nameManager:getRandomName(race, gender)
+        manager:addCharacter(name, race, class, spriteIndex, gridX, gridY)
+    end
+end
+
+
+local recruitScroll = 0
+local selectedRecruit = nil
+local recruitList = {}
 
 
 local buttons = {
@@ -66,8 +95,83 @@ function love.mousepressed(x,y,button,touch,presses)
     if game.state["running"] and gameInstance then
         gameInstance:mousepressed(x, y, button)
     end
+
+    local width = love.graphics.getWidth()
+    local listWidth = width / 3
+    local itemHeight = 35
+    if button == 1 and x < listWidth then
+        local clicked = math.floor((y + recruitScroll - 20) / itemHeight) + 1
+        if recruitList[clicked] then
+            selectedRecruit = recruitList[clicked]
+        end
+    end
+
+    local buttonX, buttonY = width - 220, love.graphics.getHeight() - 70
+    if button == 1 and selectedRecruit then
+        if x > buttonX and x < buttonX + 180 and y > buttonY and y < buttonY + 50 then
+-- todo
+        end
+    end
 end
 
+function setupRecruit()
+    characterManager.characters = {}
+    generateRecruitCharacters(characterManager, 25)
+    recruitList = characterManager.characters
+    selectedRecruit = recruitList[1]
+end
+
+function drawRecruitScreen()
+    local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+    local listWidth = width / 3
+    local detailWidth = width * 2 / 3
+
+    love.graphics.rectangle("line", 0, 0, listWidth, height)
+    local startY = 20
+    local itemHeight = 35
+    for i, char in ipairs(recruitList) do
+        local y = startY + (i - 1) * itemHeight - recruitScroll
+        if y > 0 and y < height - itemHeight then
+            if selectedRecruit == char then
+                love.graphics.setColor(0.6, 0.8, 1)
+            else
+                love.graphics.setColor(1,1,1)
+            end
+            love.graphics.print(char.name, 20, y)
+            love.graphics.setColor(1,1,1)
+        end
+    end
+
+ 
+    love.graphics.rectangle("line", listWidth, 0, detailWidth, height)
+    if selectedRecruit then
+        love.graphics.setFont(font.normal.font)
+        love.graphics.print("Név: "..selectedRecruit.name, listWidth + 30, 70)
+        love.graphics.print("Faj: "..selectedRecruit.race.name, listWidth + 30, 110)
+        love.graphics.print("Kaszt: "..selectedRecruit.class.name, listWidth + 30, 150)
+
+    end
+
+
+    if selectedRecruit then
+        local buttonX, buttonY = width - 220, height - 70
+        love.graphics.setColor(0.3, 0.7, 0.3)
+        love.graphics.rectangle("fill", buttonX, buttonY, 180, 50)
+        love.graphics.setColor(0,0,0)
+        love.graphics.printf("Select", buttonX, buttonY + 13, 180, "center")
+        love.graphics.setColor(1,1,1)
+    end
+end
+
+
+function love.wheelmoved(x, y)
+    recruitScroll = math.max(0, recruitScroll - y*30)
+end
+
+
+function love.mousepressed(x, y, button)
+    
+end
 
 function love.load()
     love.window.setFullscreen(true)
@@ -78,6 +182,7 @@ function love.load()
     buttons.menu.setting = Button("Settings", function() settings:changeDisplay() end, nil, 150, 40)
     buttons.menu.exit = Button("Exit",love.event.quit, nil, 100, 40)
     settings:loadButtons()
+    setupRecruit()
 end
 
 function love.update(dt)
@@ -127,5 +232,8 @@ function love.keypressed(key)
     end
     if gameInstance then
         gameInstance:keypressed(key)
+    end
+    if key == "c" then
+        drawRecruitScreen()
     end
 end
