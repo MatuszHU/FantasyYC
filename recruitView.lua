@@ -36,7 +36,7 @@ function RecruitView:generateCandidates(num)
         local raceKey = raceKeys[math.random(#raceKeys)]
         local classKey = classKeys[math.random(#classKeys)]
         local gender = math.random(1,2) == 1 and "male" or "female"
-        local name = nameManager:getRandomName(raceKey, gender) or "Jelölt_"..i
+        local name = nameManager:getRandomName(raceKey, gender) or "a_"..i
         local spriteIndex = 1
         local candidate = Character(name, raceKey, classKey, spriteIndex)
         candidate:setStats()
