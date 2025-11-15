@@ -23,7 +23,7 @@ function RecruitView:new(characterManager, onRecruit)
     self.listClickableRects = {}
 
     self.recruitButton = Button(
-        "Felvesz",
+        "Recruit!",
         function() self:recruitSelected() end,
         nil,
         200, 54
