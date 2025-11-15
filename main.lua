@@ -2,37 +2,45 @@
 local love = require "love"
 local Button = require "Button"
 local settingsView = require "SettingsView"
-local font = require "util/fonts"
-local character = require "character"
+local font = require "util.fonts"
+local characterManager = require "util.characterManager"
+local playerRoster = require "util.playerRoster"
+local RecruitView = require "recruitView"
 local GameManager = require "game" -- refaktorálni kell majd a maint, hogy amit lehet a game.lua-ból használjon.
---Minden globálisan érvényes érték itt legyen kezelve
+
+-- Minden globálisan érvényes érték itt legyen kezelve
+
 local game = {
-    --Játék állapotok
+    -- Játék állapotok
     state = {
         menu = true,
         paused = false,
         running = false,
     }
 }
+
+local recruitView = nil
+local recruitActive = false
+
 local settings = settingsView()
-
 local gameInstance = nil
-
 
 local buttons = {
     menu = {}
 }
+
 local function changeGameState(state)
     game.state["menu"] = state == "menu"
     game.state["paused"] = state == "paused"
     game.state["running"] = state == "running"
     print(string.format("[DEBUG] game.state changed to '%s' (menu=%s, paused=%s, running=%s)",
-    state,
-    tostring(game.state["menu"]),
-    tostring(game.state["paused"]),
-    tostring(game.state["running"])
+        state,
+        tostring(game.state["menu"]),
+        tostring(game.state["paused"]),
+        tostring(game.state["running"])
     ))
 end
+
 local mouse = {
     radius = 20,
     x = 30,
@@ -45,11 +53,17 @@ function loadMap(mapName)
 end
 
 function love.mousepressed(x,y,button,touch,presses)
+    if recruitView and recruitActive then
+        recruitView:mousepressed(x, y, button)
+        return
+    end
+
     if settings.displayed then
         for k, btn in pairs(settings.buttons.windowMode) do
             btn:pressed(x, y, mouse.radius)
         end
     end
+
     if not game.state['running'] then
         if button == 1 then
             if game.state["menu"] then
@@ -63,20 +77,22 @@ function love.mousepressed(x,y,button,touch,presses)
             end
         end
     end
+
     if game.state["running"] and gameInstance then
         gameInstance:mousepressed(x, y, button)
     end
 end
 
-
 function love.load()
     love.window.setFullscreen(true)
     background = love.graphics.newImage("assets/backgrounds/medievalBG.jpg")
     love.window.setTitle("CS2 Nagy Projekt")
+
     buttons.menu.play = Button("Start", loadMap, "ForestCamp", 150, 40)
     buttons.menu.continue = Button("Continue", nil, nil, 150, 40)
     buttons.menu.setting = Button("Settings", function() settings:changeDisplay() end, nil, 150, 40)
     buttons.menu.exit = Button("Exit",love.event.quit, nil, 100, 40)
+
     settings:loadButtons()
 end
 
@@ -88,23 +104,29 @@ function love.update(dt)
 end
 
 function love.draw()
-
     local screenWidth = love.graphics.getWidth()
     local screenHeight = love.graphics.getHeight()
+
+    if recruitView and recruitActive then
+        recruitView:draw(100, 100, 800, 500)
+        return
+    end
+
     if game.state["menu"] then
-         if background then
+        if background then
             love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth(), love.graphics.getHeight()/background:getHeight())
         else
             love.graphics.clear(0.8, 0.7, 0.6)
         end
+
         love.graphics.printf("Játék címe",font.title.font,0,100,love.graphics.getWidth(), "center")
         love.graphics.setFont(font.button.font)
         buttons.menu.play:texturedDraw(screenWidth/2 - buttons.menu.play.width/2, 200)
         buttons.menu.continue:texturedDraw(screenWidth/2 - buttons.menu.continue.width/2, 270)
         buttons.menu.setting:texturedDraw(screenWidth/2 - buttons.menu.setting.width/2, 340)
         buttons.menu.exit:texturedDraw(screenWidth - buttons.menu.exit.width - 20, screenHeight - buttons.menu.exit.height - 20)
-
         love.graphics.setFont(font.button.font)
+
         if settings.displayed then
             settings:draw(30,30)
         end
@@ -116,15 +138,36 @@ function love.draw()
     elseif game.state["running"] and gameInstance then
         gameInstance:draw()
     end
-
---debug
-
+    --debug
 end
 
 function love.keypressed(key)
     if key == "escape" then
         love.event.quit()
     end
+
+    if recruitView and recruitActive then
+        recruitView:keypressed(key)
+        return
+    end
+
+    if key == "y" then
+        recruitView = RecruitView:new(characterManager, function(selectedChar)
+            playerRoster:addCharacter(
+                selectedChar.name,
+                selectedChar.race and selectedChar.race.name or "human",
+                selectedChar.class and selectedChar.class.name or "knight",
+                selectedChar.level or 1,
+                selectedChar.gridX or 1,
+                selectedChar.gridY or 1
+            )
+            recruitView = nil
+            recruitActive = false
+        end)
+        recruitActive = true
+        return
+    end
+
     if gameInstance then
         gameInstance:keypressed(key)
     end
