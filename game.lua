@@ -66,9 +66,20 @@ function Game:draw()
     if self.showHelp then
         self.helpView:draw()
     end
+
+    if self.battleManager.showRecruit then
+        self.battleManager.recruitView:draw()
+        return
+    end
 end
 
 function Game:mousepressed(x, y, button)
+
+    if self.battleManager.showRecruit then
+        self.battleManager.recruitView:mousepressed(x, y, button)
+        return
+    end
+
     if button ~= 1 then return end -- only left click
 
     local gridX, gridY = self.gridManager:screenToGrid(x, y)
@@ -118,12 +129,15 @@ function Game:mousepressed(x, y, button)
 end
 
 function Game:keypressed(key)
-    local battle = self.battleManager
+     local battle = self.battleManager
 
+    if battle.showRecruit then
+        self.battleManager.recruitView:keypressed(key)
+        return
+    end
     -- Restart battle
     if battle.isBattleOver and key == "r" then
         battle:endBattle()
-        battle:startBattle()
     end
 
     -- Enter attack phase

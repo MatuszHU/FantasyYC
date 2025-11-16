@@ -11,10 +11,41 @@ local CombatManager = require "util.battle.combatManager"
 local SelectionManager = require "util.battle.selectionManager"
 local EffectManager = require "util.battle.effectManager"
 local BattleFlow = require "util.battle.battleFlow"
+local RecruitView = require "recruitView"
 
 function BattleManager:new(characterManager)
     local self = setmetatable({}, BattleManager)
     self.characterManager = characterManager
+
+    self.recruitView = RecruitView:new(self.characterManager, function(selectedChar)
+
+        local newChar = self.characterManager:addCharacter(
+            selectedChar.name,
+            selectedChar.race and selectedChar.race.name or "human",
+            selectedChar.class and selectedChar.class.name or "knight",
+            math.random(1, 6),
+            selectedChar.gridX or 1,
+            selectedChar.gridY or 1
+        )
+
+        table.insert(self.players[1].team, newChar)
+
+        print("Recruited new character:", newChar.name)
+
+        self.showRecruit = false
+
+        local playerTeam = self.playerRoster:getTeam()
+        local aiTeam = self._nextAITeam 
+
+        if aiTeam then
+            self.battleFlow:assignTeams(playerTeam, aiTeam)
+            self.battleFlow:startBattle()
+        else
+            print("Warning: No aiTeam found. Did endBattle() run?")
+        end
+    end)
+
+    self.showRecruit = false
     self.phase = Phase.IDLE
     self.playerRoster = PlayerRoster:new(self.characterManager)
 
@@ -167,6 +198,7 @@ function BattleManager:update(dt)
 end
 
 function BattleManager:draw()
+    
 end
 
 return BattleManager

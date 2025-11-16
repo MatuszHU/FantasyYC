@@ -32,6 +32,7 @@ function BattleFlow:startBattle()
     battle.selectedCharacter = nil
     battle.isBattleOver = false
     battle.winner = nil
+    battle.showRecruit = false
     battle.abilityCooldowns = {}
     self:resetDivineIntervention()
     battle:levelUpCharacters()
@@ -48,38 +49,20 @@ function BattleFlow:startBattle()
     print("Battle started! " .. battle:getCurrentPlayer().name .. " goes first.")
 end
 
--- 🔹 End the current battle and prepare for the next
 function BattleFlow:endBattle()
     local battle = self.battle
     print("Ending battle...")
 
     local playerTeam = battle.playerRoster:getTeam()
 
-    -- if battle.winner == "Player" then
-    --     battle.playerWinCount = battle.playerWinCount + 1
-    -- end
+    battle.showRecruit = false
 
-    -- === Add new ally if under 6 members ===
-    if #playerTeam < 6 then
-        local raceList = {"dwarf", "elf", "human"}
-        local classList = {"knight", "cavalry", "wizard", "priest"}
-
-        local race = raceList[math.random(#raceList)]
-        local class = classList[math.random(#classList)]
-        local newName = battle.playerRoster.nameManager:getRandomName(race, "male")
-
-        local spawnCol = 3 + #playerTeam
-        local spawnRow = 8 + (#playerTeam % 2)
-
-        local newAlly = battle.characterManager:addCharacter(
-            newName, race, class, math.random(1, 6), spawnCol, spawnRow
-        )
-
-        table.insert(playerTeam, newAlly)
-        print("Added new ally:", newAlly.name)
+    local canRecruit = #playerTeam < 6
+    if canRecruit then
+        battle.showRecruit = true
+        print("Opening Recruit View...")
     end
 
-    -- === Reset effects and cleanup ===
     for _, char in ipairs(playerTeam) do
         char.effects = {}
     end
@@ -101,8 +84,10 @@ function BattleFlow:endBattle()
     end
     battle.characterManager.characters = newList
 
-    -- === Create a new AI team ===
-    local aiTeam = {}
+    -- === Build next AI team (but do NOT start battle yet) ===
+    battle._nextAITeam = {}
+    local aiTeam = battle._nextAITeam
+
     local aiTeamSize = math.random(#playerTeam, #playerTeam + 2)
     local raceList = {"orc", "goblin"}
     local classList = {"knight", "cavalry", "wizard", "priest"}
@@ -116,13 +101,8 @@ function BattleFlow:endBattle()
         local aiChar = battle.characterManager:addCharacter(name, race, class, math.random(1, 6), x, y)
         table.insert(aiTeam, aiChar)
     end
-
-    battle.characterManager:clearHighlight()
-    self:assignTeams(playerTeam, aiTeam)
-    self:startBattle()
-
-    print("A new battle begins! Your roster returns to fight again!")
 end
+
 
 -- 🔹 End turn and check for victory
 function BattleFlow:checkVictory()
