@@ -30,11 +30,15 @@ end
 function RecruitView:generateCandidates(num)
     local candidates = {}
     local classKeys, raceKeys = {}, {}
-    for k, _ in pairs(class_defs) do table.insert(classKeys, k) end
+    for k, _ in pairs(class_defs) do
+        if k ~= "thief" then
+            table.insert(classKeys, k)
+        end
+    end
     for k, _ in pairs(race_defs) do table.insert(raceKeys, k) end
     for i=1, num do
         local raceKey = raceKeys[math.random(#raceKeys)]
-        local classKey = classKeys[math.random(#classKeys-1)]
+        local classKey = classKeys[math.random(#classKeys)]
         local gender = math.random(1,2) == 1 and "male" or "female"
         local name = nameManager:getRandomName(raceKey, gender) or "a_"..i
         local spriteIndex = 1
