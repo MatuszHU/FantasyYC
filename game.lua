@@ -16,13 +16,9 @@ function Game:new()
 
     -- === Create teams ===
     local playerTeam = self.battleManager.playerRoster:getTeam()
+    local player2Team = self.battleManager.player2Roster:getTeam()
 
-    local aiTeam = {
-        self.characterManager:addCharacter("Orc Grunt", "orc", "knight", 1, 8, 4),
-        self.characterManager:addCharacter("Orc Grunt2", "orc", "knight", 1, 9, 5)
-    }
-
-    self.battleManager:assignTeams(playerTeam, aiTeam)
+    self.battleManager:assignTeams(playerTeam, player2Team)
     self.battleManager:startBattle()
 
     return self

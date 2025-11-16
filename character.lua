@@ -30,7 +30,7 @@ local function Character(name, raceKey, classKey, spriteIndex, gridX, gridY)
         baseStats = {},
         bonusStats = {},
         stats = {},
-        effects = possibleEffects,
+        effects = {},
         abilities = classes[classKey].abilities,
         spriteIndex = 1,
         isDefeated = false,

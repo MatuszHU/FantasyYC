@@ -4,6 +4,7 @@ BattleManager.__index = BattleManager
 
 local Phase = require "enums.battlePhases"
 local PlayerRoster = require "util.playerRoster"
+local Player2Roster = require "util.player2Roster"
 local effectImplementations = require "util.effectImplementations"
 local TurnManager = require "util.battle.turnManager"
 local AbilityManager = require "util.battle.abilityManager"
@@ -12,46 +13,20 @@ local SelectionManager = require "util.battle.selectionManager"
 local EffectManager = require "util.battle.effectManager"
 local BattleFlow = require "util.battle.battleFlow"
 local RecruitView = require "recruitView"
+local RecruitFlow = require "util.battle.recruitFlow"
 
 function BattleManager:new(characterManager)
     local self = setmetatable({}, BattleManager)
     self.characterManager = characterManager
 
-    self.recruitView = RecruitView:new(self.characterManager, function(selectedChar)
-
-        local newChar = self.characterManager:addCharacter(
-            selectedChar.name,
-            selectedChar.race and selectedChar.race.name or "human",
-            selectedChar.class and selectedChar.class.name or "knight",
-            math.random(1, 6),
-            selectedChar.gridX or 1,
-            selectedChar.gridY or 1
-        )
-
-        table.insert(self.players[1].team, newChar)
-
-        print("Recruited new character:", newChar.name)
-
-        self.showRecruit = false
-
-        local playerTeam = self.playerRoster:getTeam()
-        local aiTeam = self._nextAITeam 
-
-        if aiTeam then
-            self.battleFlow:assignTeams(playerTeam, aiTeam)
-            self.battleFlow:startBattle()
-        else
-            print("Warning: No aiTeam found. Did endBattle() run?")
-        end
-    end)
-
     self.showRecruit = false
     self.phase = Phase.IDLE
     self.playerRoster = PlayerRoster:new(self.characterManager)
+    self.player2Roster = Player2Roster:new(self.characterManager)
 
     self.players = {
         { id = 1, name = "Player1", team  = self.playerRoster:getTeam(), isDivineInterventionUsed = false},
-        { id = 2, name = "Player2", team = {}, isDivineInterventionUsed = false }
+        { id = 2, name = "Player2", team = self.player2Roster:getTeam(), isDivineInterventionUsed = false }
     }
 
     self.currentPlayerIndex = 1
@@ -69,6 +44,7 @@ function BattleManager:new(characterManager)
     self.selectionManager = SelectionManager:new(self)
     self.battleFlow = BattleFlow:new(self)
     self.effectManager = EffectManager:new(self, effectImplementations)
+    self.recruitFlow = RecruitFlow:new(self,self.battleFlow)
     return self
 end
 
