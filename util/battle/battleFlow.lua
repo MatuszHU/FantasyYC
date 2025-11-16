@@ -37,7 +37,24 @@ function BattleFlow:startBattle()
     self:resetDivineIntervention()
     battle:levelUpCharacters()
 
-    for _, player in ipairs(battle.players) do
+    local mapCols, mapRows = 30, 19
+
+    -- Helper to place characters randomly on their side
+    local function placeTeam(team, colStart, colEnd)
+        local occupied = {}
+        for _, char in ipairs(team) do
+            local x, y
+            repeat
+                x = math.random(colStart, colEnd)
+                y = math.random(1, mapRows)
+            until not occupied[x .. "," .. y]
+            occupied[x .. "," .. y] = true
+            char.gridX = x
+            char.gridY = y
+        end
+    end
+
+    for i, player in ipairs(battle.players) do
         for _, char in ipairs(player.team) do
             char.isDefeated = false
             char.effects = {}
@@ -45,6 +62,12 @@ function BattleFlow:startBattle()
             char.passivesApplied = nil
             battle.abilityManager:applyPassiveAbilities(char)
             battle.actedCharacters[char] = false
+        end
+        -- Assign starting positions per team
+        if i == 1 then
+            placeTeam(player.team, 1, 6)
+        else
+            placeTeam(player.team, mapCols - 5, mapCols) -- 26–31
         end
     end
 
