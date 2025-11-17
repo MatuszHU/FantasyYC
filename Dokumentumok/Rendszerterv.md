@@ -35,6 +35,7 @@
 
 ---
 3. __Üzleti folyamatok modellje__
+<br>
    ![Üzleti folyamatok modellje](./Képek/diagram.png)
 ---
 4. __Követelmények__
