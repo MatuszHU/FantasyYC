@@ -10,28 +10,29 @@
     * __Főtervező:__ Szabó Balázs
 
     * Ütemterv:
-      |Funkció/Story|Feladat/Task|Prioritás|Becslés|Aktuális becslés Eltelt idő|Hátralévő idő|
-      |-------------|-----------|---------|-------|----------------|----------|-------------|
+      |Funkció/Story|Feladat/Task|Prioritás|Becslés|Aktuális becslés|Eltelt idő|Hátralévő idő|
+      |-------------|------------|---------|-------|----------------|----------|-------------|
       |Követelmény specifikáció||0|4|3|4|0|
       |Funkcionális specifikáció||0|5|5|0|5|
       |Rendszerterv||0|8|6|1|5|
       |Frontend|Főmenü elkészítése|1|2|2|0|2|
-      ||Pálya elkészítése|1|12|12|0|12|
-      |Karakterek elkészítése|1|12|12|0|12|
-      |Életerőcsík elkészítése|1|4|5|0|5|
-      |Beállítások oldal elkészítése|1|4|3|0|3|
-        ||Csaták utáni eredményoldal elkészítése|1|5|5|0|5|
-        ||Recruiting felület elkészítése|1|5|5|0|5|
-        ||Játék vége képernyő elkészítése|1|5|5|0|5|
-        |Backend|Mozgás megvalósítás|10|10|0|10|
-        ||Támadás megvalósítása|1|10|10|0|10|
-        ||Gyógyítás megvalósítása|1|10|10|0|10|
-        ||Körök megvalósítása|1|10|10|0|10|
-        ||Életerő változásának megvalósítása|1|10|10|0|10|
-        ||Képességek megvalósítása|1|10|13|0|13|
-        ||Fejlődés megvalósítása|1|10|10|0|10|
-        ||Sereg toborzásának megvalósítása|1|10|10|0|10|
-        ||Különböző típusú és képességű karakterek megvalósítása|1|10|10|0|10|
+      |Frontend|Pálya elkészítése|1|12|12|0|12|
+      |Frontend|Karakterek elkészítése|1|12|12|0|12|
+      |Frontend|Életerőcsík elkészítése|1|4|5|0|5|
+      |Frontend|Beállítások oldal elkészítése|1|4|3|0|3|
+      |Frontend|Csaták utáni eredményoldal elkészítése|1|5|5|0|5|
+      |Frontend|Recruiting felület elkészítése|1|5|5|0|5|
+      |Frontend|Játék vége képernyő elkészítése|1|5|5|0|5|
+      |Backend|Mozgás megvalósítás|1|10|10|0|10|
+      |Backend|Támadás megvalósítása|1|10|10|0|10|
+      |Backend|Gyógyítás megvalósítása|1|10|10|0|10|
+      |Backend|Körök megvalósítása|1|10|10|0|10|
+      |Backend|Életerő változásának megvalósítása|1|10|10|0|10|
+      |Backend|Képességek megvalósítása|1|10|13|0|13|
+      |Backend|Fejlődés megvalósítása|1|10|10|0|10|
+      |Backend|Sereg toborzásának megvalósítása|1|10|10|0|10|
+      |Backend|Különböző típusú és képességű karakterek megvalósítása|1|10|10|0|10|
+
 
 3. __Üzleti folyamatok modellje__
    ![Üzleti folyamatok modellje](./Képek/diagram.png)
@@ -82,6 +83,7 @@
      * Játék
        * Főmenü
        * Recruit felület
+    * Használat:
 
 6. __Fizikai környezet__
    * Az alkalmazás számítógépekre készül
