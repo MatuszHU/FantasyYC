@@ -2,7 +2,7 @@
 
 1. __A rendszer célja__
    * A rendszer célja, hogy a felhasználók egy nehéz nap után el tudják ütni az időt egy játékkal, mely elől úgy állnak fel, hogy egy jót szórakoztak és máskor is szívesen leülnek játszani vele.
-
+---
 2. __Projektterv__
     * Projektszerepkörök, felelősségek:
     * __Fő Designer:__ Majoros Máté
@@ -33,12 +33,13 @@
       |Backend|Sereg toborzásának megvalósítása|1|10|10|0|10|
       |Backend|Különböző típusú és képességű karakterek megvalósítása|1|10|10|0|10|
 
-
+---
 3. __Üzleti folyamatok modellje__
    ![Üzleti folyamatok modellje](./Képek/diagram.png)
-
+---
 4. __Követelmények__
     * Funkcionális követelmények:
+      * ![Tájékozató dokumentum](Harcrendszer.md) megléte és ismertetése
       * Csaták játszása
       * Fejlődés
       * Játék végigjátszása
@@ -50,7 +51,7 @@
       * A felhasználó ne legyen irreálisan erős a képességpontjaihoz képest
     * Törvényi előírások, szabványok:
       * GDPR-nak való megfelelés
-
+---
 5. __Funkcionális terv__
    * Rendszerszereplők:
      * Játékos 1
@@ -83,15 +84,14 @@
      * Játék
        * Főmenü
        * Recruit felület
-    * Használat:
-
+---
 6. __Fizikai környezet__
    * Az alkalmazás számítógépekre készül
    * Fejlesztői eszközök:
      * Visual studio code
      * Löve 2D
      * Lua
-
+---
 7. __Felülettervek__
    * Főmenü
      * ![Főmenü](./Képek/MainMenu.png)
@@ -101,16 +101,16 @@
      * ![Főmenü](./Képek/End.png)
    * Beállítások képernyő
      * ![Beállítások](./Képek/End.png) 
-
+---
 8. __Architektúrális terv__
    * Backend:
      * A backend egy Lua keretrendszerrel, nevezetesen a Löve 2D-vel lesz megvalósítva
    * Frontend:
      * A frontend szintén a Löve 2D keretrendszerrel lesz megvalósítva, illetve saját készítésű karakterekkel és pályákkal
-
+---
 9.  __Implementációs terv__
     * Az egész játékot a Löve 2d keretrendszerben fogjuk megvalósítani, amely képes megjeleníteni a saját készítésű textúrákat is.
-
+---
 10. __Tesztterv__
      * A tesztelések célja a rendszer és komponensei funkcionalitásának vizsgálata, ellenőrzése, a rendszer megfelelő működésének biztosítása.
         * Tesztelési módok:
@@ -135,10 +135,10 @@
               * A játék során megjelenő szövegek nyelvtanilag helyesek kell hogy legyenek
               * A classokhoz tartozó karakterek helyesen kell hogy megjelenjenek
               * A felhasználói felület elemei megfelelően kell hogy megjelenjenek
-
+---
 11. __Telepítési terv__
     A játékhoz, a játék fájljait le kell tölteni internetről, vagy egy telepítőt, mely a felhasználó által kiválasztott helyre feltelepíti a játékot
-
+---
 12. __Karbantartási terv__
     A játék üzemelése során szükséges annak karbantartása. Alkalmazkodni kell a felhasználók változó igényeihez, esetlegesen új funkciók hozzáadásával fenn tartani az felhasználók érdeklődését, illetve a játék relevanciáját.
     * Karbantartás
