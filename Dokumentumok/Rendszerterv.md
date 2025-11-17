@@ -121,20 +121,21 @@
           * Alfa teszt:
             A teszt elsődleges célja a rendszer funkcióinak és megjelenésének tesztelése külöböző böngészőkben, illetve mobilos böngészőkben. A teszt sikeres ha az oldal megjelenése és fő funkciói elfogadhatóak különböző böngészőkben. A tesztelést a fejlesztők végzik.
         Manuális tesztelés: Az oldal UI elemeit manuálisan is teszteljük.
-        * Tesztelendő funkciók:
-          * Backend:
-              * Képesnek kell lenni csatákat indítani
-              * Képesnek kell lenni a karaktereknek fejlödni
-              * Képesnek kell lenni a csatán belül támadásokat indítani
-              * Képesnek kell lenni a seregünkbe embereket toborozni
-              * A megfelelő billentyűzet lenyomásra a megfelelő műveletnek kell végrehajtódni
-              * Egy nulla hpn lévő karakterrel nem lehet semmit csinálni
-              * Nem lehet a szövetségeseket megtámadni
-          * Frontend:
-              * Egy csata után helyesen jelzi ki a csata végeredményét
-              * A játék során megjelenő szövegek nyelvtanilag helyesek kell hogy legyenek
-              * A classokhoz tartozó karakterek helyesen kell hogy megjelenjenek
-              * A felhasználói felület elemei megfelelően kell hogy megjelenjenek
+        * __Tesztesetek:__
+          * Manuális tesztelés:
+            * _Backend:_
+                * Képesnek kell lenni csatákat indítani
+                * Képesnek kell lenni a karaktereknek fejlödni
+                * Képesnek kell lenni a csatán belül támadásokat indítani
+                * Képesnek kell lenni a seregünkbe embereket toborozni
+                * A megfelelő billentyűzet lenyomásra a megfelelő műveletnek kell végrehajtódni
+                * Egy nulla hpn lévő karakterrel nem lehet semmit csinálni
+                * Nem lehet a szövetségeseket megtámadni
+            * _Frontend:_
+                * Egy csata után helyesen jelzi ki a csata végeredményét
+                * A játék során megjelenő szövegek nyelvtanilag helyesek kell hogy legyenek
+                * A classokhoz tartozó karakterek helyesen kell hogy megjelenjenek
+                * A felhasználói felület elemei megfelelően kell hogy megjelenjenek
 ---
 11. __Telepítési terv__
     A játékhoz, a játék fájljait le kell tölteni internetről, vagy egy telepítőt, mely a felhasználó által kiválasztott helyre feltelepíti a játékot
