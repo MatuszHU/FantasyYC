@@ -39,7 +39,7 @@
 ---
 4. __Követelmények__
     * Funkcionális követelmények:
-      * ![Tájékozató dokumentum](Harcrendszer.md) megléte és ismertetése
+      * [Tájékozató dokumentum](Harcrendszer.md) megléte és ismertetése
       * Csaták játszása
       * Fejlődés
       * Játék végigjátszása
