@@ -10,16 +10,16 @@
     * __Főtervező:__ Szabó Balázs
 
     * Ütemterv:
-      * |Funkció/Story|Feladat/Task|Prioritás|Becslés|Aktuális becslés Eltelt idő|Hátralévő idő|
-        |-------------|-----------|---------|-------|----------------|----------|-------------|
-        |Követelmény specifikáció||0|4|3|4|0|
-        |Funkcionális specifikáció||0|5|5|0|5|
-        |Rendszerterv||0|8|6|1|5|
-        |Frontend|Főmenü elkészítése|1|2|2|0|2|
-        ||Pálya elkészítése|1|12|12|0|12|
-        ||Karakterek elkészítése|1|12|12|0|12|
-        ||Életerőcsík elkészítése|1|4|5|0|5|
-        ||Beállítások oldal elkészítése|1|4|3|0|3|
+      |Funkció/Story|Feladat/Task|Prioritás|Becslés|Aktuális becslés Eltelt idő|Hátralévő idő|
+      |-------------|-----------|---------|-------|----------------|----------|-------------|
+      |Követelmény specifikáció||0|4|3|4|0|
+      |Funkcionális specifikáció||0|5|5|0|5|
+      |Rendszerterv||0|8|6|1|5|
+      |Frontend|Főmenü elkészítése|1|2|2|0|2|
+      ||Pálya elkészítése|1|12|12|0|12|
+      |Karakterek elkészítése|1|12|12|0|12|
+      |Életerőcsík elkészítése|1|4|5|0|5|
+      |Beállítások oldal elkészítése|1|4|3|0|3|
         ||Csaták utáni eredményoldal elkészítése|1|5|5|0|5|
         ||Recruiting felület elkészítése|1|5|5|0|5|
         ||Játék vége képernyő elkészítése|1|5|5|0|5|
