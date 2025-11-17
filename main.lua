@@ -148,25 +148,7 @@ function love.keypressed(key)
         recruitView:keypressed(key)
         return
     end
-    --Teszt integráció a recruit nézethez
-    --TODO rendes integráció start gombtól
-    if key == "y" then
-        recruitView = RecruitView:new(characterManager, function(selectedChar)
-            playerRoster:addCharacter(
-                selectedChar.name,
-                selectedChar.race and selectedChar.race.name or "human",
-                selectedChar.class and selectedChar.class.name or "knight",
-                selectedChar.level or 1,
-                selectedChar.gridX or 1,
-                selectedChar.gridY or 1
-            )
-            recruitView = nil
-            recruitActive = false
-        end)
-        recruitActive = true
-        return
-    end
-
+    
     if gameInstance then
         gameInstance:keypressed(key)
     end
