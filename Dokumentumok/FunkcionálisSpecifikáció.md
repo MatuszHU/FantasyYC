@@ -13,16 +13,14 @@ Jelenleg kevés 2D-s stratégiai játék található a piacon
 |Modul|ID|Név|Verzió|Kifejtés|
 |-----|--|---|------|--------|
 |Felület|K1|Főmenü|v1.0|Új játék kezdése és a beállítások módosítása|
-|Felület|K2|Pálya|v1.0|A felhasználó különböző kinézetű és különböző elemekből álló pályákon tud játszani|
+|Felület|K2|Pálya|v1.0|A felhasználó egy pályán tud játszani|
 |Felület|K3|Karakter|v1.0|A felhasználó képes különböző típusú, fajú  és kinézetű karaktereket irányítani csaták során|
-|Játékmenet|K4|Nehézségi szint|v1.0|A felhasználó több különböző nehézségi szintből tud választani|
+|Játékmenet|K4|Gyógyítás|v1.0|A felhasználó minden körben tud gyógyítani magán, ha van nála gyógyító karakter|
 |Játékmenet|K5|Támadás|v1.0|A felhasználó minden körben tud bizonyos erősségű támadás intézni az ellenség felé|
 |Játékmenet|K6|Fejlődés|v1.0|A felhasználó csapatában lévő karakterek minden csata után tapasztalati pontokat kapnak melyekből fejlődni tudnak|
-|Felület|K7|Csata vége|v1.0|Minden csata után egy kijelzés, hogy győztes vagy vesztes volt az adott csata|
-|Felület|K8|Játék vége|v1.0|A teljes játék végeztével bejön egy gratuláció és köszönetnyilvánítás, hogy végigvitte és játszott a játékkal|
-|Mentés|K9|Játék mentése|v1.0|Az aktuális játékállás elmentése|
-|Mentés|K10|Játék betöltése|v1.0|Egy korábban elmentett játékállás betöltése|
-|Játékmenet|K11|Csata kiválasztása|v1.0|A térképen/listában megjelenő csaták egyikének kiválasztása|
+|Játékmenet|K7|Képességek|v1.0|A felhasználó tud különböző képességeket használni|
+|Felület|K8|Csata vége|v1.0|Minden csata után egy kijelzés, hogy győztes vagy vesztes volt az adott csata|
+|Felület|K9|Játék vége|v1.0|A teljes játék végeztével bejön egy gratuláció és köszönetnyilvánítás, hogy végigvitte és játszott a játékkal|
 
 ## Használati esetek
 
@@ -38,15 +36,11 @@ Jelenleg kevés 2D-s stratégiai játék található a piacon
   * Főmenü
        * ![Főmenü](./Képek/MainMenu.png)
      * Toborzó képernyő
-       * ![Főmenü](./Képek/Recruiting.png)
-     * Kapu képernyő
-       * ![Főmenü](./Képek/Gate.png)
-     * Tábor képernyő
-       * ![Főmenü](./Képek/Camp.png)
-     * Nehézségi szint választó
-       * ![Főmenü](./Képek/Difficulty.png)
+       * ![Toborzó képernyő](./Képek/Recruiting.png)
      * Játék vége képernyő
-       * ![Főmenü](./Képek/End.png)
+       * ![Játék vége](./Képek/End.png)
+     * Beállítások képernyő
+       * ![Beállítások](./Képek/End.png)
 
 ## Forgatókönyv
 
@@ -56,4 +50,3 @@ Jelenleg kevés 2D-s stratégiai játék található a piacon
   
 * Stratégiai játék: A stratégiai játék egy videojáték-műfaj, ami gondolkodást és megfontolt tervezést igényel a győzelem eléréséhez.
 * Szerepjáték: A szerepjáték olyan tevékenységek megnevezése, amelyben a résztvevők egyénként vagy csoportban különböző szerepeket játszanak el, a tevékenység időtartama alatt a játékok lényegét jelentő szerepvállalásoknak megfelelően viselkednek.
-* Nehézségi szint: A játék nehézségi szintje egy olyan, a játékos képességeitől és tapasztalatától függő paraméter, amely a játék kihívásának mértékét határozza meg, például a ellenségek erőssége, az erőforrások mennyisége vagy az összetett feladatok gyakorisága befolyásolásával.
