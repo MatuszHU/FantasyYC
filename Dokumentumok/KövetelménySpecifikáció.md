@@ -29,6 +29,7 @@ Egy olyan játék elkészítése a célunk, melyben a felhasználó képes egy m
 |Játékmenet|K5|Gyógyítás|v1.0|A felhasználó minden körben tud gyógyítani magán, ha van nála gyógyító karakter|
 |Játékmenet|K6|Recruitolás|v1.0|A csata kezdetekor vaálaszthatsz egy új karaktert a seregedbe|
 |Játékmenet|K7|Fejlődés|v1.0|A felhasználó csapatában lévő karakterek minden csata után tapasztalati pontokat kapnak melyekből fejlődni tudnak|
+|Játékmenet|K8|Képességek|v1.0|Egy karakter különböző képességeket tud használni|
 |Felület|K8|Csata vége|v1.0|Minden csata után egy kijelzés, hogy győztes vagy vesztes volt az adott csata|
 |Felület|K9|Játék vége|v1.0|A teljes játék végeztével bejön egy gratuláció és köszönetnyilvánítás, hogy végigvitte és játszott a játékkal|
 

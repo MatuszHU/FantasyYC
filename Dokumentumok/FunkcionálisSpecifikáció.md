@@ -8,19 +8,20 @@ Az alkalmazás célja egy olyan felülnézetes körökre osztott 2D stratégiai 
 
 Jelenleg kevés 2D-s stratégiai játék található a piacon
 
-## Követelménylista
+## Funkciólista
 
-|Modul|ID|Név|Verzió|Kifejtés|
-|-----|--|---|------|--------|
-|Felület|K1|Főmenü|v1.0|Új játék kezdése és a beállítások módosítása|
-|Felület|K2|Pálya|v1.0|A felhasználó egy pályán tud játszani|
-|Felület|K3|Karakter|v1.0|A felhasználó képes különböző típusú, fajú  és kinézetű karaktereket irányítani csaták során|
-|Játékmenet|K4|Gyógyítás|v1.0|A felhasználó minden körben tud gyógyítani magán, ha van nála gyógyító karakter|
-|Játékmenet|K5|Támadás|v1.0|A felhasználó minden körben tud bizonyos erősségű támadás intézni az ellenség felé|
-|Játékmenet|K6|Fejlődés|v1.0|A felhasználó csapatában lévő karakterek minden csata után tapasztalati pontokat kapnak melyekből fejlődni tudnak|
-|Játékmenet|K7|Képességek|v1.0|A felhasználó tud különböző képességeket használni|
-|Felület|K8|Csata vége|v1.0|Minden csata után egy kijelzés, hogy győztes vagy vesztes volt az adott csata|
-|Felület|K9|Játék vége|v1.0|A teljes játék végeztével bejön egy gratuláció és köszönetnyilvánítás, hogy végigvitte és játszott a játékkal|
+|Modul|Követelmény ID|ID|Név|Verzió|Kifejtés|
+|-----|--------------|--|---|------|--------|
+|Felület|K1|F1|Főmenü|v1.0|A játék indítása, új játék kezdése és beállítások elérése|
+|Felület|K2|F2|Pálya|v1.0|A játéktér megjelenítése, ahol a felhasználó játszhat|
+|Felület|K3|F3|Karakter|v1.0|Különböző típusú/fajú/kinézetű karakterek megjelenítése és irányítása csatákban|
+|Játékmenet|K4|F4|Támadás|v1.0|A felhasználó minden körben támadást tud indítani meghatározott erősséggel|
+|Játékmenet|K5|F5|Gyógyítás|v1.0|Ha a csapatban van gyógyító karakter, gyógyítás végrehajtása körönként|
+|Játékmenet|K6|F6|Recruitolás|v1.0|A csata elején új karakter választható a csapatba|
+|Játékmenet|K7|F7|Fejlődés|v1.0|A csata utáni tapasztalati pontok kiosztása és karakterek fejlődése|
+|Játékmenet|K8|F8|Képességek|v1.0|A karakter egyedi képességek használatára képes|
+|Felület|K9|F9|Csata vége|v1.0|A csata győzelem/vesztés kijelzése a felhasználónak|
+|Felület|K10|F10|Játék vége|v1.0|A teljes játék végén gratuláció és köszönet megjelenítése.|
 
 ## Használati esetek
 
