@@ -1,4 +1,4 @@
-# Csapat 2 Projekt | Szoftferfejlesztési módeszertanok
+# Csapat 2 Projekt | Szoftverfejlesztési módeszertanok
 
 ## Dokumentáció helye
 
