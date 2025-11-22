@@ -1,4 +1,4 @@
-# Csapat 2 Projekt | Szoftverfejlesztési módeszertanok
+# Fantasy Yoga Club | Csapat 2 Projekt | Szoftverfejlesztési módeszertanok
 
 ## Dokumentáció helye
 
