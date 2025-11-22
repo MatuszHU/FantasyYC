@@ -1,6 +1,8 @@
 local AbilityManager = {}
 AbilityManager.__index = AbilityManager
 
+math.randomseed(os.time())
+
 local Phase = require "enums.battlePhases"
 
 function AbilityManager:new(battle)
@@ -99,7 +101,7 @@ function AbilityManager:divineIntervention()
     end
     self.battle:getCurrentPlayer().isDivineInterventionUsed = true
     print("I worked!")
-    local diceroll = 99 --math.random(100)
+    local diceroll = math.random(100)
     print(diceroll)
     local enemyPlayerIndex = self.battle:getCurrentPlayer().id
     if  enemyPlayerIndex == 1 then
