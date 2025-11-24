@@ -21,6 +21,6 @@
 ## Telepítés
 
 1. Töltse le a FantasyYogaClub-MacOS.zip vagy FantasyYogaClub-Win64.zip-et operációs rendszertől függően. Linux operációs rendszerre való telepítéshez referáljon a [Löve2 hivatalos dokumentációra](https://love2d.org/wiki/Game_Distribution).
-2. Tömörítse ki
-3. Futtassa a futtatható állományt (.exe vagy .app)
-4. Élvézze a játékot
+2. Tömörítse ki.
+3. Futtassa a futtatható állományt (.exe vagy .app).
+4. Élvézze a játékot!
