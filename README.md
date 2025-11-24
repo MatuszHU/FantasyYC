@@ -10,16 +10,17 @@
 * Jegyzőkönyvek: [/Dokumentumok/Jegyzőkönyvek/](./Dokumentumok/Jegyzőkönyvek/)
 * Felület tervek: [/Dokumentumok/Képek/](./Dokumentumok/Képek/)
 * User Storyk:  [/Dokumentumok/UserStory/](./Dokumentumok/UserStory/)
-* Franklin D. Roosevelt: [Wiki](https://hu.wikipedia.org/wiki/Franklin_D._Roosevelt)
+* Franklin D. Roosevelt: [Wikipedia](https://hu.wikipedia.org/wiki/Franklin_D._Roosevelt)
 
 ## Követelmények
 
-* Windows Vista/7/8/8.1/10/11 64 bit-es verzió
+* Windows Vista / 7 / 8 / 8.1 / 10 / 11 - 64 bit-es verzió
 * MacOS 10.11+
+* Linux Ubuntu
 
 ## Telepítés
 
-1. Töltse le a FantasyYogaClub-MacOS.zip vagy FantasyYogaClub-Win64.zip-et operációs rendszertől függően
+1. Töltse le a FantasyYogaClub-MacOS.zip vagy FantasyYogaClub-Win64.zip-et operációs rendszertől függően. Linux operációs rendszerre való telepítéshez referáljon a [Löve2 hivatalos dokumentációra](https://love2d.org/wiki/Game_Distribution).
 2. Tömörítse ki
 3. Futtassa a futtatható állományt (.exe vagy .app)
 4. Élvézze a játékot
