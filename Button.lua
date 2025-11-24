@@ -1,5 +1,5 @@
 local love = require "love"
-local button = require "enums/button"
+local button = require "enums.button"
 
 function Button(text, func, func_param, width, height)
 

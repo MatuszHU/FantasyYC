@@ -1,5 +1,5 @@
 local love = require "love"
-local AbilityDescriptions = require "util.AbilityDescriptions"
+local AbilityDescriptions = require "util.abilityDescriptions"
 
 local function AbilityHelpView()
     local w, h = love.graphics.getDimensions()

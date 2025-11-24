@@ -1,5 +1,5 @@
 -- RecruitFlow.lua
-local RecruitView = require("RecruitView")
+local RecruitView = require("../recruitView")
 
 local RecruitFlow = {}
 RecruitFlow.__index = RecruitFlow

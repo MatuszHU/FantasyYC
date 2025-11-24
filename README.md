@@ -12,9 +12,14 @@
 * User Storyk:  [/Dokumentumok/UserStory/](./Dokumentumok/UserStory/)
 * Franklin D. Roosevelt: [Wiki](https://hu.wikipedia.org/wiki/Franklin_D._Roosevelt)
 
+## Követelmények
+
+* Windows Vista/7/8/8.1/10/11 64 bit-es verzió
+* MacOS 10.11
 
 ## Telepítés
 
-1. [Löve2d](https://love2d.org/) interpreterrel futtatható (MacOS 10.11+, Windows Vista and higher, Linux Ubuntu)
-2. Töltse le forráskódot és helyezze a Löve2d interpreter főkönyvtárába.
-3. Indítsa el az interpreter futtatható állományát.
+1. Töltse le a FantasyYogaClub-MacOS.zip vagy FantasyYogaClub-Win64.zip-et operációs rendszertől függően
+2. Tömörítse ki
+3. Futtassa a futtatható állományt (.exe vagy .app)
+4. Élvézze a játékot

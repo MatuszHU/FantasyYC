@@ -4,7 +4,7 @@ local CharacterManager = require "util.characterManager"
 local BattleManager = require "util.battle.battleManager"
 local Phase = require "enums.battlePhases"
 local GameInstructionsView  = require "GameInstructionsView"
-local AbilityHelpView = require "AbilityHelpView"
+local AbilityHelpView = require "abilityHelpView"
 
 local Game = {}
 Game.__index = Game
