@@ -15,7 +15,7 @@
 ## Követelmények
 
 * Windows Vista/7/8/8.1/10/11 64 bit-es verzió
-* MacOS 10.11
+* MacOS 10.11+
 
 ## Telepítés
 
