@@ -1,4 +1,6 @@
 # Fantasy Yoga Club | Csapat 2 Projekt | Szoftverfejlesztési módeszertanok
+## Megjegyzés: Projekt neve szigorúan belső használatra és azonosításra készült, nem reprezentálja a játékmenetet, funkcióit és/vagy grafikát
+---
 
 ## Dokumentáció helye
 
@@ -12,11 +14,15 @@
 * User Storyk:  [/Dokumentumok/UserStory/](./Dokumentumok/UserStory/)
 * Franklin D. Roosevelt: [Wikipedia](https://hu.wikipedia.org/wiki/Franklin_D._Roosevelt)
 
+---
+
 ## Követelmények
 
 * Windows Vista / 7 / 8 / 8.1 / 10 / 11 - 64 bit-es verzió
 * MacOS 10.11+
 * Linux Ubuntu
+
+--- 
 
 ## Telepítés
 
